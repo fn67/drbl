@@ -1,5 +1,19 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    setIsMobile(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+  return isMobile
+}
+
 interface Voter {
   name: string
   initials: string
@@ -148,6 +162,7 @@ export function VoterReveal({
   votersHome, votersDraw, votersAway,
   completed, winner,
 }: VoterRevealProps) {
+  const isMobile = useIsMobile()
   const total = votersHome.length + votersDraw.length + votersAway.length
   const correct = completed
     ? (winner === 'home' ? votersHome : winner === 'draw' ? votersDraw : votersAway)
@@ -198,7 +213,7 @@ export function VoterReveal({
       </div>
 
       {/* Three columns */}
-      <div style={{ display: 'flex', gap: 12 }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 12 }}>
         <VoterColumn
           header={<span>{homeFlag} {homeTeam}</span>}
           sub="Win prediction"

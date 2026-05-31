@@ -42,8 +42,8 @@ export function BottomNav() {
   }
 
   return (
-    <div className="fixed bottom-3 left-3 right-3 z-50 md:hidden" style={{
-      display: 'flex', justifyContent: 'space-around', alignItems: 'center',
+    <div className="fixed bottom-3 left-3 right-3 z-50 flex md:hidden" style={{
+      justifyContent: 'space-around', alignItems: 'center',
       padding: '10px 4px 12px',
       background: 'rgba(40, 50, 75, 0.55)',
       backdropFilter: 'blur(24px) saturate(180%)',

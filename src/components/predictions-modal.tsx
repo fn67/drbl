@@ -1,7 +1,20 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { LeaderboardEntry } from '@/types'
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    setIsMobile(mq.matches)
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+  return isMobile
+}
 
 interface PredictionRow {
   match: string
@@ -18,12 +31,15 @@ interface PredictionsModalProps {
 }
 
 export function PredictionsModal({ user, open, onClose }: PredictionsModalProps) {
+  const isMobile = useIsMobile()
   return (
     <Sheet open={open} onOpenChange={(o) => { if (!o) onClose() }}>
-      <SheetContent side="right" style={{
+      <SheetContent side={isMobile ? 'bottom' : 'right'} style={{
         background: 'var(--card)',
         border: '1px solid var(--border)',
-        maxWidth: 540, width: '100%',
+        ...(isMobile
+          ? { maxHeight: '85vh', width: '100%', borderRadius: '20px 20px 0 0' }
+          : { maxWidth: 540, width: '100%' }),
         padding: 0,
       }}>
         {user && (

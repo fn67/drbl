@@ -57,9 +57,8 @@ export default function MySpacePage() {
         borderRadius: 'var(--radius)',
         padding: '24px 26px',
         boxShadow: '0 1px 0 rgba(255,255,255,0.05) inset, 0 16px 40px -18px rgba(0,0,0,0.5)',
-        display: 'flex', alignItems: 'center', gap: 24,
+        display: 'flex', flexDirection: 'column', gap: 10,
         position: 'relative', overflow: 'hidden',
-        flexWrap: 'wrap',
       }}>
         {/* Green glow */}
         <div style={{
@@ -67,18 +66,18 @@ export default function MySpacePage() {
           background: 'radial-gradient(circle, rgba(98,200,150,0.14) 0%, transparent 70%)',
           pointerEvents: 'none',
         }} />
-        {/* Identity */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1, minWidth: 200 }}>
+        {/* Row 1: Avatar + Name/Email column */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{
-            width: 76, height: 76, borderRadius: 999, flexShrink: 0,
+            width: 52, height: 52, borderRadius: 999, flexShrink: 0,
             background: 'linear-gradient(135deg, #E8C887 0%, #C99A4B 100%)',
-            color: 'rgba(0,0,0,0.75)', fontWeight: 700, fontSize: 27,
+            color: 'rgba(0,0,0,0.75)', fontWeight: 700, fontSize: 20,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.35), 0 8px 24px -8px rgba(0,0,0,0.5)',
             border: '2px solid rgba(255,255,255,0.14)',
           }}>{initials}</div>
           <div style={{ minWidth: 0 }}>
-            <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--foreground)', letterSpacing: -0.4 }}>
+            <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--foreground)', letterSpacing: -0.4 }}>
               {MOCK_USER.name}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--muted-foreground)', marginTop: 3 }}>
@@ -92,40 +91,40 @@ export default function MySpacePage() {
             </div>
           </div>
         </div>
-        {/* Divider */}
-        <div style={{ width: 1, alignSelf: 'stretch', background: 'var(--border)', display: 'none' }} className="md:block" />
-        {/* Points + stats */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+        {/* Row 3: Stat chips */}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 7,
+            padding: '7px 13px',
+            background: 'rgba(98,200,150,0.08)',
+            border: '1px solid rgba(98,200,150,0.25)',
+            borderRadius: 999,
+          }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                  stroke="oklch(0.80 0.13 90)" strokeWidth="2"
                  strokeLinecap="round" strokeLinejoin="round">
               <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/>
               <path d="M17 5h2a2 2 0 0 1 0 4h-2M7 5H5a2 2 0 0 0 0 4h2"/>
             </svg>
-            <span style={{ fontSize: 40, fontWeight: 700, color: 'var(--foreground)', fontVariantNumeric: 'tabular-nums', letterSpacing: -1, lineHeight: 1 }}>
-              {totalPoints.toLocaleString()}
-            </span>
-            <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--muted-foreground)' }}>pts</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--foreground)', fontVariantNumeric: 'tabular-nums' }}>{totalPoints.toLocaleString()}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)' }}>pts</span>
           </div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-            {[
-              { value: totalPredicted, label: 'predicted' },
-              { value: totalCorrect,   label: 'correct' },
-              { value: `${accuracy}%`, label: 'accuracy' },
-            ].map(({ value, label }) => (
-              <div key={label} style={{
-                display: 'flex', alignItems: 'center', gap: 7,
-                padding: '7px 13px',
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid var(--border)',
-                borderRadius: 999,
-              }}>
-                <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--foreground)', fontVariantNumeric: 'tabular-nums' }}>{value}</span>
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)' }}>{label}</span>
-              </div>
-            ))}
-          </div>
+          {[
+            { value: totalPredicted, label: 'predicted' },
+            { value: totalCorrect,   label: 'correct' },
+            { value: `${accuracy}%`, label: 'accuracy' },
+          ].map(({ value, label }) => (
+            <div key={label} style={{
+              display: 'flex', alignItems: 'center', gap: 7,
+              padding: '7px 13px',
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid var(--border)',
+              borderRadius: 999,
+            }}>
+              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--foreground)', fontVariantNumeric: 'tabular-nums' }}>{value}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)' }}>{label}</span>
+            </div>
+          ))}
         </div>
       </div>
 
