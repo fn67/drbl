@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Match, Prediction, PredictedWinner } from '@/types'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 const KNOCKOUT_ROUNDS = ['Round of 16', 'Quarter Final', 'Semi Final', 'Final']
 
@@ -12,21 +13,40 @@ interface VoteFormProps {
 }
 
 export function VoteForm({ match, existingPrediction }: VoteFormProps) {
+  const router = useRouter()
   const [pick, setPick] = useState<PredictedWinner | null>(
     existingPrediction?.predicted_winner ?? null
   )
   const [diff, setDiff] = useState<number | null>(
     existingPrediction?.goal_difference ?? null
   )
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const isKnockout = KNOCKOUT_ROUNDS.includes(match.round)
   const isTeam = pick === 'home' || pick === 'away'
   const canSubmit = pick !== null && (pick === 'draw' || diff !== null)
 
-  const handleSubmit = () => {
-    if (!canSubmit) return
-    console.log('Prediction:', { matchId: match.id, pick, diff })
-    toast.success(existingPrediction ? 'Prediction updated!' : 'Prediction confirmed!')
+  const handleSubmit = async () => {
+    if (!canSubmit || isSubmitting) return
+    setIsSubmitting(true)
+    try {
+      const res = await fetch('/api/predictions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ matchId: match.id, predictedWinner: pick, goalDifference: diff }),
+      })
+      if (!res.ok) {
+        const { error } = await res.json()
+        toast.error(error ?? 'Failed to submit prediction')
+        return
+      }
+      toast.success(existingPrediction ? 'Prediction updated!' : 'Prediction confirmed!')
+      router.refresh()
+    } catch {
+      toast.error('Network error — please try again')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const togglePillStyle = (active: boolean, muted = false) => ({
@@ -138,28 +158,26 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
       )}
 
       {/* CTA */}
-      <button onClick={handleSubmit} disabled={!canSubmit} style={{
+      <button onClick={handleSubmit} disabled={!canSubmit || isSubmitting} style={{
         width: '100%',
         background: canSubmit ? 'var(--primary)' : 'var(--muted)',
         color: canSubmit ? 'var(--primary-foreground)' : 'var(--muted-foreground)',
-        border: 'none',
-        fontFamily: 'inherit',
-        fontWeight: 700, fontSize: 15.5, letterSpacing: 0.2,
-        padding: '15px 18px',
+        border: 'none', fontFamily: 'inherit',
+        fontWeight: 700, fontSize: 15.5, letterSpacing: 0.2, padding: '15px 18px',
         borderRadius: 'calc(var(--radius) - 4px)',
-        cursor: canSubmit ? 'pointer' : 'not-allowed',
-        boxShadow: canSubmit
-          ? '0 2px 0 rgba(0,0,0,0.25), 0 10px 20px -6px rgba(98, 200, 150, 0.6)'
-          : 'none',
+        cursor: canSubmit && !isSubmitting ? 'pointer' : 'not-allowed',
+        opacity: isSubmitting ? 0.7 : 1,
+        boxShadow: canSubmit ? '0 2px 0 rgba(0,0,0,0.25), 0 10px 20px -6px rgba(98,200,150,0.6)' : 'none',
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-        marginTop: 4,
-        transition: 'all .15s',
+        marginTop: 4, transition: 'all .15s',
       }}>
-        {existingPrediction ? 'Update prediction' : 'Confirm prediction'}
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M5 12h14M13 6l6 6-6 6"/>
-        </svg>
+        {isSubmitting ? 'Submitting…' : existingPrediction ? 'Update prediction' : 'Confirm prediction'}
+        {!isSubmitting && (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12h14M13 6l6 6-6 6"/>
+          </svg>
+        )}
       </button>
 
       {existingPrediction && (
