@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Match } from '@/types'
+import { TEAMS, GROUPS } from '@/lib/teams'
 import { computeStatus } from '@/lib/utils'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -26,9 +27,130 @@ const STATUS_BADGE = {
 const ROUNDS = ['Group Stage', 'Round of 16', 'Quarter Final', 'Semi Final', 'Final']
 
 const emptyForm = {
-  home_team: '', away_team: '', home_flag: '', away_flag: '',
+  home_team: '', away_team: '',
   kickoff_date: '', kickoff_time: '', round: 'Group Stage', group_name: '',
 }
+
+// ── Searchable team dropdown ────────────────────────────────────────────────
+function TeamSelect({ value, onChange, exclude, label }: {
+  value: string
+  onChange: (name: string) => void
+  exclude?: string
+  label: string
+}) {
+  const [query, setQuery] = useState('')
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onClickOutside)
+    return () => document.removeEventListener('mousedown', onClickOutside)
+  }, [])
+
+  useEffect(() => {
+    if (open) { setQuery(''); setTimeout(() => inputRef.current?.focus(), 0) }
+  }, [open])
+
+  const selected = TEAMS.find(t => t.name === value)
+  const filtered = TEAMS.filter(t =>
+    t.name !== exclude &&
+    t.name.toLowerCase().includes(query.toLowerCase())
+  )
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1, minWidth: 0 }}>
+      <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)' }}>{label}</label>
+      <div ref={ref} style={{ position: 'relative' }}>
+        <button
+          type="button"
+          onClick={() => setOpen(v => !v)}
+          style={{
+            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            gap: 8, padding: '9px 12px',
+            background: 'var(--background)', border: '1px solid var(--border)',
+            borderRadius: 'var(--radius)', cursor: 'pointer', fontFamily: 'inherit',
+            fontSize: 14, color: selected ? 'var(--foreground)' : 'var(--muted-foreground)',
+            outline: open ? '2px solid var(--ring)' : 'none', outlineOffset: 2,
+            transition: 'border-color .15s',
+          }}
+        >
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
+            {selected ? (
+              <><span style={{ fontSize: 18, lineHeight: 1 }}>{selected.flag}</span><span style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selected.name}</span></>
+            ) : (
+              <span>Select team…</span>
+            )}
+          </span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+               style={{ flexShrink: 0, opacity: 0.5, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }}>
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+
+        {open && (
+          <div style={{
+            position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, zIndex: 200,
+            background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 10,
+            boxShadow: '0 12px 32px -8px rgba(0,0,0,0.6)',
+            overflow: 'hidden',
+          }}>
+            <div style={{ padding: '8px 8px 4px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', background: 'rgba(255,255,255,0.04)', borderRadius: 7, border: '1px solid var(--border)' }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5, flexShrink: 0 }}>
+                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+                <input
+                  ref={inputRef}
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  placeholder="Search teams…"
+                  style={{
+                    background: 'none', border: 'none', outline: 'none',
+                    fontSize: 13, fontWeight: 500, color: 'var(--foreground)',
+                    fontFamily: 'inherit', width: '100%',
+                  }}
+                />
+              </div>
+            </div>
+            <div style={{ maxHeight: 220, overflowY: 'auto', padding: '4px 8px 8px' }}>
+              {filtered.length === 0 ? (
+                <div style={{ padding: '10px 8px', fontSize: 13, color: 'var(--muted-foreground)', textAlign: 'center' }}>No teams found</div>
+              ) : (
+                filtered.map(t => (
+                  <button
+                    key={t.name}
+                    type="button"
+                    onClick={() => { onChange(t.name); setOpen(false) }}
+                    style={{
+                      width: '100%', display: 'flex', alignItems: 'center', gap: 10,
+                      padding: '8px 10px', borderRadius: 7,
+                      background: t.name === value ? 'rgba(98,200,150,0.12)' : 'transparent',
+                      border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+                      color: 'var(--foreground)', transition: 'background .1s', textAlign: 'left',
+                    }}
+                    onMouseEnter={e => { if (t.name !== value) e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
+                    onMouseLeave={e => { if (t.name !== value) e.currentTarget.style.background = 'transparent' }}
+                  >
+                    <span style={{ fontSize: 18, lineHeight: 1 }}>{t.flag}</span>
+                    <span style={{ fontSize: 13.5, fontWeight: 600 }}>{t.name}</span>
+                    <span style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 600, color: 'var(--muted-foreground)', opacity: 0.7 }}>{t.group}</span>
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+// ────────────────────────────────────────────────────────────────────────────
 
 export default function AdminMatchesPage() {
   const [matches, setMatches] = useState<Match[]>([])
@@ -37,6 +159,8 @@ export default function AdminMatchesPage() {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   const [editId, setEditId] = useState<string | null>(null)
   const [form, setForm] = useState(emptyForm)
+
+  const isGroupStage = form.round === 'Group Stage'
 
   useEffect(() => {
     fetch('/api/matches')
@@ -51,7 +175,6 @@ export default function AdminMatchesPage() {
       const dt = new Date(match.kickoff_at)
       setForm({
         home_team: match.home_team, away_team: match.away_team,
-        home_flag: match.home_flag, away_flag: match.away_flag,
         kickoff_date: dt.toISOString().split('T')[0],
         kickoff_time: dt.toISOString().split('T')[1].slice(0, 5),
         round: match.round, group_name: match.group_name,
@@ -64,14 +187,46 @@ export default function AdminMatchesPage() {
     setDialogOpen(true)
   }
 
+  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
+
+  const setHomeTeam = (name: string) => {
+    const team = TEAMS.find(t => t.name === name)
+    setForm(f => ({
+      ...f,
+      home_team: name,
+      // auto-fill group when round is Group Stage and group is not already set
+      group_name: f.round === 'Group Stage' && team ? team.group : f.group_name,
+    }))
+  }
+
+  const setRound = (round: string) => {
+    setForm(f => ({
+      ...f,
+      round,
+      group_name: round === 'Group Stage' ? f.group_name : '',
+    }))
+  }
+
   const handleSave = async () => {
-    const { home_team, away_team, home_flag, away_flag, kickoff_date, kickoff_time, round, group_name } = form
-    if (!home_team || !away_team || !home_flag || !away_flag || !kickoff_date || !kickoff_time || !round) {
+    const { home_team, away_team, kickoff_date, kickoff_time, round, group_name } = form
+    if (!home_team || !away_team || !kickoff_date || !kickoff_time || !round) {
       toast.error('All fields are required')
       return
     }
+    if (home_team === away_team) {
+      toast.error('Home and away teams must be different')
+      return
+    }
+
+    const homeData = TEAMS.find(t => t.name === home_team)!
+    const awayData = TEAMS.find(t => t.name === away_team)!
     const kickoff_at = `${kickoff_date}T${kickoff_time}:00Z`
-    const payload = { home_team, away_team, home_flag, away_flag, kickoff_at, round, group_name }
+    const payload = {
+      home_team, away_team,
+      home_flag: homeData.flag, away_flag: awayData.flag,
+      kickoff_at, round,
+      group_name: round === 'Group Stage' ? group_name : '',
+    }
 
     if (editId) {
       const res = await fetch('/api/admin/matches', {
@@ -121,8 +276,6 @@ export default function AdminMatchesPage() {
     if (!res.ok) { toast.error('Failed to update lock status'); return }
     setMatches(ms => ms.map(m => m.id === id ? { ...m, status: newStatus, manually_locked } : m))
   }
-
-  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
 
   return (
     <>
@@ -191,38 +344,64 @@ export default function AdminMatchesPage() {
         </div>
       </div>
 
+      {/* Add / Edit dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent style={{ background: 'var(--card)', border: '1px solid var(--border)', maxWidth: 520 }}>
+        <DialogContent style={{ background: 'var(--card)', border: '1px solid var(--border)', maxWidth: 540 }}>
           <DialogHeader>
             <DialogTitle>{editId ? 'Edit match' : 'Add match'}</DialogTitle>
           </DialogHeader>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 8 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 8 }}>
+
+            {/* Team selects side by side */}
+            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10 }}>
+              <TeamSelect
+                label="Home team"
+                value={form.home_team}
+                onChange={setHomeTeam}
+                exclude={form.away_team}
+              />
+              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted-foreground)', paddingBottom: 10, flexShrink: 0 }}>vs</div>
+              <TeamSelect
+                label="Away team"
+                value={form.away_team}
+                onChange={v => set('away_team', v)}
+                exclude={form.home_team}
+              />
+            </div>
+
+            {/* Kickoff date + time */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               {[
-                { key: 'home_team', label: 'Home team', placeholder: 'Brazil' },
-                { key: 'home_flag', label: 'Home flag emoji', placeholder: '🇧🇷' },
-                { key: 'away_team', label: 'Away team', placeholder: 'Argentina' },
-                { key: 'away_flag', label: 'Away flag emoji', placeholder: '🇦🇷' },
-                { key: 'kickoff_date', label: 'Kickoff date', placeholder: '', type: 'date' },
-                { key: 'kickoff_time', label: 'Kickoff time (UTC)', placeholder: '', type: 'time' },
-              ].map(({ key, label, placeholder, type }) => (
+                { key: 'kickoff_date', label: 'Kickoff date', type: 'date' },
+                { key: 'kickoff_time', label: 'Kickoff time (UTC)', type: 'time' },
+              ].map(({ key, label, type }) => (
                 <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)' }}>{label}</label>
-                  <Input type={type ?? 'text'} value={(form as Record<string, string>)[key]} onChange={e => set(key, e.target.value)} placeholder={placeholder} />
+                  <Input type={type} value={(form as Record<string, string>)[key]} onChange={e => set(key, e.target.value)} />
                 </div>
               ))}
             </div>
+
+            {/* Round */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)' }}>Round</label>
-              <Select value={form.round} onValueChange={(v) => v && set('round', v)}>
+              <Select value={form.round} onValueChange={v => v && setRound(v)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>{ROUNDS.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)' }}>Group name (leave empty for knockouts)</label>
-              <Input value={form.group_name} onChange={e => set('group_name', e.target.value)} placeholder="Group A" />
-            </div>
+
+            {/* Group — only for Group Stage */}
+            {isGroupStage && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)' }}>Group</label>
+                <Select value={form.group_name} onValueChange={v => v && set('group_name', v)}>
+                  <SelectTrigger><SelectValue placeholder="Select group…" /></SelectTrigger>
+                  <SelectContent>{GROUPS.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+            )}
+
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 4 }}>
               <button onClick={() => setDialogOpen(false)} style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--foreground)', cursor: 'pointer', fontSize: 14, fontWeight: 600, padding: '10px 18px', borderRadius: 'var(--radius)', fontFamily: 'inherit' }}>Cancel</button>
               <button onClick={handleSave} style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, padding: '10px 18px', borderRadius: 'var(--radius)', fontFamily: 'inherit' }}>Save match</button>
@@ -231,6 +410,7 @@ export default function AdminMatchesPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Delete confirm dialog */}
       <Dialog open={deleteConfirm !== null} onOpenChange={() => setDeleteConfirm(null)}>
         <DialogContent style={{ background: 'var(--card)', border: '1px solid var(--border)', maxWidth: 400 }}>
           <DialogHeader><DialogTitle>Delete match?</DialogTitle></DialogHeader>
