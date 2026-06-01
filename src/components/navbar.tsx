@@ -30,9 +30,10 @@ interface NavbarProps {
   userInitials?: string
   userName?: string
   userEmail?: string
+  isAdmin?: boolean
 }
 
-export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail }: NavbarProps) {
+export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail, isAdmin }: NavbarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [open, setOpen] = useState(false)
@@ -58,6 +59,7 @@ export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail }
     { label: 'Matches', href: '/' },
     { label: 'Leaderboard', href: '/leaderboard' },
     { label: 'My Space', href: '/myspace' },
+    ...(isAdmin ? [{ label: 'Admin', href: '/admin/matches' }] : []),
   ]
 
   const isActive = (href: string) => {
