@@ -22,6 +22,7 @@ export interface Match {
   status: MatchStatus
   home_score: number | null
   away_score: number | null
+  manually_locked: boolean
   created_at: string
 }
 

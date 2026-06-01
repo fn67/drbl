@@ -1,4 +1,16 @@
+'use client'
+
+import { createClient } from '@/lib/supabase'
+
 export default function LoginPage() {
+  const handleSignIn = async () => {
+    const supabase = createClient()
+    await supabase.auth.signInWithOAuth({
+      provider: 'azure',
+      options: { scopes: 'email', redirectTo: `${window.location.origin}/auth/callback` },
+    })
+  }
+
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -28,7 +40,7 @@ export default function LoginPage() {
             FIFA World Cup 2026 · Office League
           </div>
         </div>
-        <button style={{
+        <button onClick={handleSignIn} style={{
           display: 'flex', alignItems: 'center', gap: 12,
           width: '100%', padding: '14px 20px',
           background: 'rgba(255,255,255,0.06)',

@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { getUser } from '@/lib/auth'
 
 const Logo = () => (
   <div style={{
@@ -15,7 +17,10 @@ const Logo = () => (
   </div>
 )
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const user = await getUser()
+  if (!user?.is_admin) redirect('/')
+
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
