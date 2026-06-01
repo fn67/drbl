@@ -359,202 +359,202 @@ Mark each task ✅ as you complete it.
 ## PHASE 8 — Supabase Setup
 
 ### 8.1 Supabase project
-- [ ] Create project at supabase.com
-- [ ] Copy project URL and anon key
-- [ ] Create `.env.local` from `.env.example`
-- [ ] Install: `npm install @supabase/supabase-js @supabase/ssr`
+- ✅ Create project at supabase.com
+- ✅ Copy project URL and anon key
+- ✅ Create `.env.local` from `.env.example`
+- ✅ Install: `npm install @supabase/supabase-js @supabase/ssr`
 
 ### 8.2 Supabase clients
-- [ ] Create `src/lib/supabase.ts` — browser client
-- [ ] Create `src/lib/supabase-server.ts` — server client for API routes
-- [ ] Test connection with a simple query
+- ✅ Create `src/lib/supabase.ts` — browser client
+- ✅ Create `src/lib/supabase-server.ts` — server client for API routes
+- ✅ Test connection with a simple query
 
 ### 8.3 Run schema
-- [ ] Paste `docs/schema.sql` into Supabase SQL editor
-- [ ] Verify all tables created: users, matches, predictions
-- [ ] Verify leaderboard view created
-- [ ] Verify calculate_points function created
-- [ ] Verify RLS policies applied
+- ✅ Paste `docs/schema.sql` into Supabase SQL editor
+- ✅ Verify all tables created: users, matches, predictions
+- ✅ Verify leaderboard view created
+- ✅ Verify calculate_points function created
+- ✅ Verify RLS policies applied
 
 ### 8.4 Git commit
-- [ ] Commit `chore(supabase): client setup and schema`
+- ✅ Commit `chore(supabase): client setup and schema`
 
 ---
 
 ## PHASE 9 — Microsoft SSO Auth
 
 ### 9.1 Azure app registration
-- [ ] Register app in Azure Portal
-- [ ] Add redirect URI: http://localhost:3000/auth/callback
-- [ ] Copy client ID and client secret
-- [ ] Add to Supabase Auth → Microsoft provider
+- ✅ Register app in Azure Portal
+- ✅ Add redirect URI: http://localhost:3000/auth/callback
+- ✅ Copy client ID and client secret
+- ✅ Add to Supabase Auth → Microsoft provider
 
 ### 9.2 Auth routes
-- [ ] Create `src/app/(auth)/login/page.tsx` — Microsoft SSO button
-- [ ] Create `src/app/auth/callback/route.ts` — handles OAuth callback
-- [ ] Create middleware.ts — protect all (main) and admin routes, redirect to /login
+- ✅ Create `src/app/(auth)/login/page.tsx` — Microsoft SSO button
+- ✅ Create `src/app/auth/callback/route.ts` — handles OAuth callback
+- ✅ Create middleware.ts — protect all (main) and admin routes, redirect to /login
 
 ### 9.3 Auth context
-- [ ] Create `src/lib/auth.ts` — helper to get current user server-side
-- [ ] Update navbar to show real user name and points
-- [ ] Update admin layout to check real is_admin flag
+- ✅ Create `src/lib/auth.ts` — helper to get current user server-side
+- ✅ Update navbar to show real user name and points
+- ✅ Update admin layout to check real is_admin flag
 
 ### 9.4 Git commit
-- [ ] Commit `feat(auth): microsoft SSO login and route protection`
+- ✅ Commit `feat(auth): microsoft SSO login and route protection`
 
 ---
 
 ## PHASE 10 — Wire Home Page
 
 ### 10.1 Matches API route
-- [ ] Create `src/app/api/matches/route.ts` — GET all matches
-- [ ] Returns matches sorted by kickoff_at
-- [ ] Auto-updates status based on kickoff_at time (upcoming → voting_open at 48hrs before)
+- ✅ Create `src/app/api/matches/route.ts` — GET all matches
+- ✅ Returns matches sorted by kickoff_at
+- ✅ Auto-updates status based on kickoff_at time (upcoming → voting_open at 48hrs before)
 
 ### 10.2 Home page data
-- [ ] Replace mock data with real Supabase fetch
-- [ ] Upcoming tab: fetch upcoming + voting_open + locked matches
-- [ ] Past tab: fetch completed matches
-- [ ] Add loading skeleton state for cards
+- ✅ Replace mock data with real Supabase fetch
+- ✅ Upcoming tab: fetch upcoming + voting_open + locked matches
+- ✅ Past tab: fetch completed matches
+- ✅ Add loading skeleton state for cards
 
 ### 10.3 User predictions on home
-- [ ] Fetch current user's predictions for displayed matches
-- [ ] Show correct voted/not-voted state on each card
+- ✅ Fetch current user's predictions for displayed matches
+- ✅ Show correct voted/not-voted state on each card
 
 ### 10.4 Git commit
-- [ ] Commit `feat(home): wire match timeline to supabase`
+- ✅ Commit `feat(home): wire match timeline to supabase`
 
 ---
 
 ## PHASE 11 — Wire Match Detail + Voting
 
 ### 11.1 Single match API
-- [ ] Create `src/app/api/matches/[id]/route.ts` — GET single match with predictions + voters
+- ✅ Create `src/app/api/matches/[id]/route.ts` — GET single match with predictions + voters
 
 ### 11.2 Predictions API
-- [ ] Create `src/app/api/predictions/route.ts`
-- [ ] POST — create or update prediction (upsert)
-- [ ] Validate: match must be voting_open, user can only predict once
-- [ ] Return updated prediction
+- ✅ Create `src/app/api/predictions/route.ts`
+- ✅ POST — create or update prediction (upsert)
+- ✅ Validate: match must be voting_open, user can only predict once
+- ✅ Return updated prediction
 
 ### 11.3 Wire vote form
-- [ ] Replace console.log with real POST to /api/predictions
-- [ ] Handle success: show toast, refresh voter counts
-- [ ] Handle error: show error toast
+- ✅ Replace console.log with real POST to /api/predictions
+- ✅ Handle success: show toast, refresh voter counts
+- ✅ Handle error: show error toast
 
 ### 11.4 Wire voter reveal
-- [ ] Fetch real voter list from match API
-- [ ] Show real % bars on locked/completed matches
-- [ ] Show real names and predictions in columns
+- ✅ Fetch real voter list from match API
+- ✅ Show real % bars on locked/completed matches
+- ✅ Show real names and predictions in columns
 
 ### 11.5 Git commit
-- [ ] Commit "feat: match detail and voting wired to supabase"
+- ✅ Commit "feat: match detail and voting wired to supabase"
 
 ---
 
 ## PHASE 12 — Wire Leaderboard + My Space
 
 ### 12.1 Leaderboard API
-- [ ] Create `src/app/api/leaderboard/route.ts` — query leaderboard view
-- [ ] Returns users sorted by total_points desc, name asc
+- ✅ Create `src/app/api/leaderboard/route.ts` — query leaderboard view
+- ✅ Returns users sorted by total_points desc, name asc
 
 ### 12.2 Wire leaderboard
-- [ ] Replace mock leaderboard with real data
-- [ ] Wire predictions modal to fetch real prediction history per user
-- [ ] Add loading state
+- ✅ Replace mock leaderboard with real data
+- ✅ Wire predictions modal to fetch real prediction history per user
+- ✅ Add loading state
 
 ### 12.3 My Space API
-- [ ] Create `src/app/api/myspace/route.ts`
-- [ ] Returns current user's stats + active predictions + completed predictions
+- ✅ Create `src/app/api/myspace/route.ts`
+- ✅ Returns current user's stats + active predictions + completed predictions
 
 ### 12.4 Wire My Space
-- [ ] Replace mock data with real fetch
-- [ ] Pending votes: real open matches user hasn't predicted
-- [ ] Active predictions: real voted matches not yet kicked off
-- [ ] History: real completed match predictions
+- ✅ Replace mock data with real fetch
+- ✅ Pending votes: real open matches user hasn't predicted
+- ✅ Active predictions: real voted matches not yet kicked off
+- ✅ History: real completed match predictions
 
 ### 12.5 Git commit
-- [ ] Commit "feat: leaderboard and myspace wired to supabase"
+- ✅ Commit "feat: leaderboard and myspace wired to supabase"
 
 ---
 
 ## PHASE 13 — Wire Admin Panel
 
 ### 13.1 Admin matches API
-- [ ] Create `src/app/api/admin/matches/route.ts`
-- [ ] POST — create match
-- [ ] PATCH — edit match, lock/unlock
-- [ ] DELETE — delete match
+- ✅ Create `src/app/api/admin/matches/route.ts`
+- ✅ POST — create match
+- ✅ PATCH — edit match, lock/unlock
+- ✅ DELETE — delete match
 
 ### 13.2 Wire admin match management
-- [ ] Create/edit/delete forms call real API
-- [ ] Lock/unlock calls real API
-- [ ] Table shows real matches from Supabase
+- ✅ Create/edit/delete forms call real API
+- ✅ Lock/unlock calls real API
+- ✅ Table shows real matches from Supabase
 
 ### 13.3 Admin results API
-- [ ] Create `src/app/api/admin/results/[id]/route.ts`
-- [ ] POST — set scores, change status to completed, call calculate_points()
+- ✅ Create `src/app/api/admin/results/[id]/route.ts`
+- ✅ POST — set scores, change status to completed, call calculate_points()
 
 ### 13.4 Wire admin results
-- [ ] Approve result calls real API
-- [ ] Points automatically calculated on approval
-- [ ] Override result re-runs calculate_points()
+- ✅ Approve result calls real API
+- ✅ Points automatically calculated on approval
+- ✅ Override result re-runs calculate_points()
 
 ### 13.5 Git commit
-- [ ] Commit "feat: admin panel wired to supabase"
+- ✅ Commit "feat: admin panel wired to supabase"
 
 ---
 
 ## PHASE 14 — Polish
 
 ### 14.1 Loading states
-- [ ] Add skeleton loaders for match cards on home page
-- [ ] Add skeleton for leaderboard rows
-- [ ] Add loading spinner for vote submission
+- ✅ Add skeleton loaders for match cards on home page
+- ✅ Add skeleton for leaderboard rows
+- ✅ Add loading spinner for vote submission
 
 ### 14.2 Error states
-- [ ] Network error on home: "Unable to load matches" with retry button
-- [ ] Failed vote submission: clear error toast
-- [ ] 404 on /match/[id] if match doesn't exist
+- ✅ Network error on home: "Unable to load matches" with retry button
+- ✅ Failed vote submission: clear error toast
+- ✅ 404 on /match/[id] if match doesn't exist
 
 ### 14.3 Mobile QA pass
-- [ ] Test every page at 375px
-- [ ] Test every page at 768px tablet
-- [ ] Fix any overflow, font size, or tap target issues
-- [ ] Ensure bottom nav doesn't overlap content
+- ✅ Test every page at 375px
+- ✅ Test every page at 768px tablet
+- ✅ Fix any overflow, font size, or tap target issues
+- ✅ Ensure bottom nav doesn't overlap content
 
 ### 14.4 Status auto-update
-- [ ] Verify status calculation based on kickoff_at is accurate
-- [ ] Test voting_open triggers correctly at 48hrs before kickoff
-- [ ] Test locked triggers at kickoff time
+- ✅ Verify status calculation based on kickoff_at is accurate
+- ✅ Test voting_open triggers correctly at 48hrs before kickoff
+- ✅ Test locked triggers at kickoff time
 
 ### 14.5 Git commit
-- [ ] Commit "polish: loading states, error states, mobile QA"
+- ✅ Commit "polish: loading states, error states, mobile QA"
 
 ---
 
 ## PHASE 15 — Deploy
 
 ### 15.1 Vercel setup
-- [ ] Push repo to GitHub
-- [ ] Connect repo to Vercel
-- [ ] Add all env vars to Vercel dashboard
-- [ ] Add production redirect URI to Azure app registration
+- ✅ Push repo to GitHub
+- ✅ Connect repo to Vercel
+- ✅ Add all env vars to Vercel dashboard
+- ✅ Add production redirect URI to Azure app registration
 
 ### 15.2 Supabase production
-- [ ] Add Vercel production URL to Supabase allowed URLs
-- [ ] Test Microsoft SSO on production URL
+- ✅ Add Vercel production URL to Supabase allowed URLs
+- ✅ Test Microsoft SSO on production URL
 
 ### 15.3 Smoke test
-- [ ] Login works
-- [ ] Can view matches
-- [ ] Can cast a prediction
-- [ ] Leaderboard loads
-- [ ] My Space loads
-- [ ] Admin can create a match and approve a result
+- ✅ Login works
+- ✅ Can view matches
+- ✅ Can cast a prediction
+- ✅ Leaderboard loads
+- ✅ My Space loads
+- ✅ Admin can create a match and approve a result
 
 ### 15.4 Git commit
-- [ ] Commit "deploy: production ready"
+- ✅ Commit "deploy: production ready"
 
 ---
 
