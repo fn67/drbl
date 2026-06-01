@@ -106,7 +106,7 @@ create policy "Anyone authenticated can read matches"
 
 create policy "Only admins can insert matches"
   on public.matches for insert
-  using (exists (
+  with check (exists (
     select 1 from public.users
     where id = auth.uid() and is_admin = true
   ));
