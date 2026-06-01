@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server'
 import { getUser } from '@/lib/auth'
 import { computeStatus, getInitials } from '@/lib/utils'
 import { PendingVotes } from '@/components/pending-votes'
+import { LogoutButton } from '@/components/logout-button'
 
 export default async function MySpacePage() {
   const supabase = await createClient()
@@ -200,6 +201,9 @@ export default async function MySpacePage() {
           )}
         </>
       )}
+      <div style={{ paddingTop: 4, paddingBottom: 8 }}>
+        <LogoutButton />
+      </div>
     </div>
   )
 }
