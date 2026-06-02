@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
+import { validateEmployee } from '@/lib/validate-employee'
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })
@@ -34,6 +35,14 @@ export async function proxy(request: NextRequest) {
 
   if (user && pathname === '/login') {
     return NextResponse.redirect(new URL('/', request.url))
+  }
+
+  if (user && !isPublic) {
+    const { active } = await validateEmployee(user.email!)
+    if (!active) {
+      await supabase.auth.signOut()
+      return NextResponse.redirect(new URL('/login?error=access_denied', request.url))
+    }
   }
 
   return response

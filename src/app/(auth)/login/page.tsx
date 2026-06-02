@@ -1,8 +1,18 @@
 'use client'
 
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 
+const ERROR_MESSAGES: Record<string, string> = {
+  access_denied: 'Your account is not active. Please contact IT support.',
+  auth_failed:   'Sign in failed. Please try again.',
+}
+
 export default function LoginPage() {
+  const searchParams = useSearchParams()
+  const error = searchParams.get('error')
+  const errorMessage = error ? ERROR_MESSAGES[error] ?? 'An error occurred. Please try again.' : null
+
   const handleSignIn = async () => {
     const supabase = createClient()
     await supabase.auth.signInWithOAuth({
@@ -40,6 +50,23 @@ export default function LoginPage() {
             FIFA World Cup 2026 · Office League
           </div>
         </div>
+        {errorMessage && (
+          <div style={{
+            width: '100%', padding: '12px 16px',
+            background: 'rgba(255,80,80,0.10)',
+            border: '1px solid rgba(255,80,80,0.25)',
+            borderRadius: 'var(--radius)',
+            display: 'flex', alignItems: 'flex-start', gap: 10,
+          }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,100,100,0.9)"
+                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,140,140,0.95)', lineHeight: 1.5 }}>
+              {errorMessage}
+            </span>
+          </div>
+        )}
         <button onClick={handleSignIn} style={{
           display: 'flex', alignItems: 'center', gap: 12,
           width: '100%', padding: '14px 20px',
