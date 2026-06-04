@@ -2,7 +2,13 @@
 
 DRBL is an office World Cup 2026 prediction game web app.
 Name derived from "dribble" — football themed.
-Built for ~1000 employees. Fun, competitive, minimal.
+Built for ~1,000 employees. Fun, competitive, minimal.
+
+⚠️ IMPORTANT: This file must never be overwritten by automated
+tools, scaffolding, or package installers (e.g. create-next-app).
+Only update this file when explicitly instructed to do so.
+
+---
 
 ## App Name
 DRBL — use this everywhere: navbar, page titles, browser tab title, and any branding text.
@@ -19,6 +25,7 @@ Never use "Predictor 2026" — that was a design placeholder only.
 - **Auth:** Microsoft SSO via Supabase Auth (Azure AD)
 - **Hosting:** Vercel
 - **Font:** Quicksand (Google Fonts)
+- **Flags:** flag-icons library (circular style, replaces emoji flags)
 
 ---
 
@@ -51,61 +58,55 @@ src/
       login/
         page.tsx
     (main)/
-      layout.tsx              ← floating navbar + page wrapper
-      page.tsx                ← home / match timeline
+      layout.tsx
+      page.tsx
       match/
         [id]/
-          page.tsx            ← match detail, shareable URL
+          page.tsx
       leaderboard/
         page.tsx
       myspace/
         page.tsx
     admin/
-      layout.tsx              ← admin wrapper, check is_admin
+      layout.tsx
       matches/
-        page.tsx              ← create, edit, delete matches
+        page.tsx
       results/
-        page.tsx              ← approve results, lock/unlock
+        page.tsx
     api/
-      predictions/
-        route.ts
-      matches/
-        route.ts
-        [id]/
-          route.ts
-      leaderboard/
-        route.ts
-      myspace/
-        route.ts
-      admin/
-        matches/
-          route.ts
-        results/
-          [id]/
-            route.ts
+      predictions/route.ts
+      matches/route.ts
+      matches/[id]/route.ts
+      leaderboard/route.ts
+      myspace/route.ts
+      admin/matches/route.ts
+      admin/results/[id]/route.ts
   components/
     ui/                       ← shadcn auto-generated, do not edit
-    navbar.tsx                ← floating pill navbar
-    bottom-nav.tsx            ← mobile bottom navigation
-    match-card.tsx            ← match card for timeline
-    vote-form.tsx             ← prediction form on match detail
-    voter-reveal.tsx          ← three-column voter display
-    leaderboard-list.tsx      ← leaderboard rows
-    predictions-modal.tsx     ← view predictions slide-over
-    pending-votes.tsx         ← reminder section in myspace
+    navbar.tsx
+    bottom-nav.tsx
+    match-card.tsx
+    vote-form.tsx
+    voter-reveal.tsx
+    leaderboard-list.tsx
+    predictions-modal.tsx
+    pending-votes.tsx
   lib/
-    supabase.ts               ← supabase browser client
-    supabase-server.ts        ← supabase server client
-    points.ts                 ← points calculation logic
-    utils.ts                  ← cn() and helpers
+    supabase.ts
+    supabase-server.ts
+    points.ts
+    utils.ts
     teams.ts                  ← hardcoded 48 World Cup 2026 teams
-    auth.ts                   ← helper to get current user server-side
+    auth.ts
   types/
-    index.ts                  ← all TypeScript types
+    index.ts
+scripts/
+  seed.ts                     ← seeds db with sample data (dev only)
+  clear.ts                    ← clears all seeded data (dev only)
 docs/
-  schema.sql                  ← supabase table definitions
-CLAUDE.md                     ← this file
-tasks.md                      ← granular task list
+  schema.sql
+CLAUDE.md
+tasks.md
 ```
 
 ---
@@ -164,10 +165,27 @@ export interface LeaderboardEntry {
 
 export interface Team {
   name: string
-  flag: string
+  code: string   ← ISO 3166-1 alpha-2 lowercase e.g. 'us', 'gb-eng'
   group: string
 }
 ```
+
+---
+
+## Teams
+
+All 48 World Cup 2026 teams are hardcoded in `src/lib/teams.ts`.
+Each team has: name, code (ISO), group (Group A through Group L).
+Flag emoji field has been removed — flags rendered via flag-icons using code.
+The Add Match form uses this list for searchable team dropdowns.
+
+## Flags
+
+Using flag-icons library for all flag rendering.
+Import: `import 'flag-icons/css/flag-icons.min.css'`
+Usage: `<span className="fi fi-{code} fis" />` with border-radius 50% for circular style.
+Special codes: England = gb-eng, Scotland = gb-sct.
+Planned: white stroke around circular flags (deferred, post-launch).
 
 ---
 
@@ -176,15 +194,11 @@ export interface Team {
 Three core tables: `users`, `matches`, `predictions`
 Full SQL in `docs/schema.sql`.
 
----
-
-## Teams
-
-All 48 World Cup 2026 teams are hardcoded in `src/lib/teams.ts`.
-Not stored in the database — teams never change during the tournament.
-Each team has: name, flag emoji, group (Group A through Group L).
-The Add Match form uses this list for searchable team dropdowns.
-Flags are always sourced from the selected team — never typed manually.
+Key notes:
+- `handle_new_user` trigger auto-creates user row in public.users on first login
+- Name field uses: full_name → name → display_name → split_part(email, '@', 1)
+- This is a personal Microsoft account limitation — company accounts send full name automatically
+- Do NOT add manual user creation logic in the auth callback — trigger handles it
 
 ---
 
@@ -200,7 +214,6 @@ upcoming → voting_open → locked → completed
 - `completed`: result approved by admin, points calculated
 
 Status auto-updates on page load based on `kickoff_at` time.
-No cron job needed — calculated client/server side on every load.
 Admin can manually override lock/unlock at any time.
 
 ---
@@ -223,7 +236,6 @@ Admin can manually override lock/unlock at any time.
 - Users can edit prediction anytime before lock
 - Vote % hidden until voting locks
 - After lock: vote % shown, voter names revealed in three columns
-- Voter names shown in three columns: Home | Draw | Away
 - On mobile voter columns stack vertically, desktop shows three columns side by side
 
 ---
@@ -232,43 +244,37 @@ Admin can manually override lock/unlock at any time.
 
 ### 1. Login `/login`
 - Microsoft SSO button only
-- Full screen, dark, branded
 
 ### 2. Home `/`
 - Floating pill navbar
 - Two toggle pills: Upcoming (default) | Past
-- Upcoming: today first, soonest at top
-- Past: most recent first
 - Match cards grouped by date
 
 ### 3. Match Detail `/match/[id]`
 - Shareable URL
 - Three states: voting_open, locked, completed
-- voting_open: prediction form
-- locked: voter reveal, no result
-- completed: voter reveal with results and points
 
 ### 4. Leaderboard `/leaderboard`
 - No rank numbers
 - Sorted by total points desc, alphabetical tie-break
 - Current user row highlighted with green left border
 - Top 3 slightly elevated
-- View predictions slide-over modal
-- On mobile: bottom sheet
+- View predictions modal — bottom sheet on mobile
 
 ### 5. My Space `/myspace`
 - Pending votes reminder (amber, conditional)
-- Profile card (avatar, name, email, points, stats)
-- Active predictions (editable)
+- Profile card (avatar, name from email prefix, email, points, stats)
+- Active predictions — two row layout:
+  Row 1: team names and vs (full width)
+  Row 2: user pick badge, lock time, edit button (smaller sizing)
 - Prediction history (completed)
-- Log out button at bottom (mobile)
+- Log out button at bottom (mobile only)
 
 ### 6. Admin — Match Management `/admin/matches`
-- Only visible to is_admin = true users
-- Admin link appears in navbar for admin users only
-- Searchable team dropdowns for home/away (from teams.ts)
-- Group dropdown (A-L) only shows when Round is Group Stage
-- Lock/unlock toggle per match
+- Visible only to is_admin = true users
+- Admin link in navbar for admin users only
+- Searchable team dropdowns using teams.ts
+- Group dropdown only shows when Round is Group Stage
 
 ### 7. Admin — Results `/admin/results`
 - Enter scores and approve results
@@ -279,16 +285,39 @@ Admin can manually override lock/unlock at any time.
 ## Navbar
 
 Floating pill — centered, fixed, frosted glass effect.
-Contents: logo + DRBL | Matches · Leaderboard · My Space | 🏆 pts | avatar
-- Admin users see an extra Admin link
-- Avatar circle is clickable — opens dropdown with name, email, logout
+Contents: logo + DRBL | Matches · Leaderboard · My Space · Admin (admin only) | 🏆 pts | avatar
+
+Avatar circle:
+- Clickable — opens dropdown with name, email, logout
 - Points display is non-clickable, informational only
-- On mobile: logo only in pill, bottom nav bar for navigation
+
+Mobile: logo only in pill, bottom nav bar for navigation.
 
 ## Logout
-- Desktop: avatar dropdown in navbar → Log out button
+- Desktop: avatar dropdown → Log out
 - Mobile: Log out button at bottom of My Space page
 - Both call Supabase signOut() and redirect to /login
+
+---
+
+## Branches
+
+- `main` — clean, empty base
+- `dev` — main development branch, all completed work lives here
+- `ui-tweaks` — open branch for UI polish (branched from dev)
+- `test-auth` — experimental employee validation middleware, NOT merging
+
+---
+
+## Seed Scripts (Dev Only)
+
+```bash
+npm run seed    ← populates db with 20 matches, 10 users, predictions
+npm run clear   ← wipes all seeded data
+```
+
+Scripts live in `/scripts/`. Use Supabase service role key (bypasses RLS).
+Never run seed on production.
 
 ---
 
@@ -303,13 +332,13 @@ Contents: logo + DRBL | Matches · Leaderboard · My Space | 🏆 pts | avatar
 - Keep components under 150 lines — split if longer
 - Dark mode is default — test every component in dark
 - Use Quicksand font — loaded via Google Fonts in layout.tsx
-- Flags are emoji — sourced from teams.ts, never typed manually
+- Flags use flag-icons with circular style — never emoji flags
+- Never commit automatically — always wait for explicit instruction to commit
+  Exception: long autonomous build sessions (phases) where committing per section is expected
 
 ---
 
 ## Git Commit Rules
-
-Commit after every completed phase section. Never batch multiple sections into one commit.
 
 Format: `type(scope): short description`
 
@@ -323,20 +352,12 @@ Examples:
 ```
 chore(setup): nextjs scaffold and tweakcn theme
 feat(nav): floating pill navbar with frosted glass
-feat(nav): mobile bottom navigation bar
-feat(home): match timeline with all four card states
-feat(match): vote form with goal difference picker
-feat(match): voter reveal three column layout
-feat(leaderboard): list with predictions modal
-feat(myspace): profile pending votes and history
-feat(admin): match management and results approval
-fix(auth): microsoft SSO callback handler
-style(match-card): tighten spacing on completed state
+feat(flags): replace emoji with flag-icons circular flags
+fix(auth): resolve user name showing as email after SSO
+fix(myspace): restructure active prediction card layout
 ```
 
 Never use: "update", "fix stuff", "wip", "changes".
-Scope matches component or page name.
-Description says what it does, not what file changed.
 
 ---
 
@@ -352,4 +373,6 @@ Description says what it does, not what file changed.
 - Vote % bar shown when status is locked or completed
 - Voter names shown when status is locked or completed
 - Points shown on voter names only when status is completed
-- Name displayed everywhere comes from Microsoft SSO full_name (raw_user_meta_data), never email
+- Name displayed everywhere comes from public.users name field — never from auth session email directly
+- User row in public.users is created automatically by handle_new_user trigger on first login
+- Do not add manual user creation code anywhere — it conflicts with the trigger
