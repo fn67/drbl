@@ -91,7 +91,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
       {/* Main content */}
       <main className="flex-1 p-8 overflow-auto">
-        {children}
+        <div className="max-w-4xl mx-auto">
+          {children}
+        </div>
       </main>
     </div>
   )
