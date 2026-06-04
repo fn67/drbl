@@ -77,8 +77,8 @@ export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail, 
   const dividerCol = 'rgba(255,255,255,0.10)'
 
   return (
-    <div className="fixed top-6 left-0 right-0 z-50 hidden md:flex justify-center pointer-events-none">
-      <div style={{
+    <div className="fixed top-6 left-0 right-0 z-50 hidden md:flex justify-center px-4 pointer-events-none">
+      <div className="w-full max-w-4xl" style={{
         pointerEvents: 'auto',
         display: 'flex', alignItems: 'center', gap: 6,
         padding: '8px 8px 8px 14px',
@@ -99,7 +99,7 @@ export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail, 
           </span>
         </div>
         <div style={{ width: 1, height: 22, background: dividerCol, margin: '0 4px' }} />
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, justifyContent: 'center' }}>
           {links.map((link) => (
             <Link key={link.label} href={link.href} style={{
               fontFamily: 'var(--font-quicksand), Quicksand, sans-serif',
