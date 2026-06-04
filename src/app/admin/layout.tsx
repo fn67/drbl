@@ -22,10 +22,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!user?.is_admin) redirect('/')
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="h-screen overflow-hidden bg-background flex">
       {/* Sidebar */}
       <aside style={{
         width: 220, flexShrink: 0,
+        height: '100%', overflow: 'hidden',
         background: 'var(--card)',
         borderRight: '1px solid var(--border)',
         display: 'flex', flexDirection: 'column',
