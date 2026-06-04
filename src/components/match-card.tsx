@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 import { Match, Prediction } from '@/types'
+import { Flag } from '@/components/flag'
+import { getTeamCode } from '@/lib/teams'
 
 interface MatchCardProps {
   match: Match
@@ -95,7 +97,7 @@ export function MatchCard({ match, userPrediction }: MatchCardProps) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           {/* Home team */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
-            <span style={{ fontSize: 32, lineHeight: 1 }}>{match.home_flag}</span>
+            <Flag code={getTeamCode(match.home_team)} size={32} />
             <span style={{
               fontSize: 16, fontWeight: 600, color: 'var(--foreground)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -125,7 +127,7 @@ export function MatchCard({ match, userPrediction }: MatchCardProps) {
 
           {/* Away team */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0, flexDirection: 'row-reverse' }}>
-            <span style={{ fontSize: 32, lineHeight: 1 }}>{match.away_flag}</span>
+            <Flag code={getTeamCode(match.away_team)} size={32} />
             <span style={{
               fontSize: 16, fontWeight: 600, color: 'var(--foreground)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -170,13 +172,13 @@ export function MatchCard({ match, userPrediction }: MatchCardProps) {
             padding: '10px 14px',
             fontSize: 14, fontWeight: 600, color: 'var(--foreground)',
           }}>
-            <span>
-              <span style={{ color: 'var(--muted-foreground)' }}>You voted: </span>
-              {userPrediction.predicted_winner === 'home'
-                ? `${match.home_flag} ${match.home_team}`
-                : userPrediction.predicted_winner === 'away'
-                ? `${match.away_flag} ${match.away_team}`
-                : 'Draw'}
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+              <span style={{ color: 'var(--muted-foreground)' }}>You voted:</span>
+              {userPrediction.predicted_winner === 'home' ? (
+                <><Flag code={getTeamCode(match.home_team)} size={16} /> {match.home_team}</>
+              ) : userPrediction.predicted_winner === 'away' ? (
+                <><Flag code={getTeamCode(match.away_team)} size={16} /> {match.away_team}</>
+              ) : 'Draw'}
               {userPrediction.goal_difference ? ` +${userPrediction.goal_difference}` : ''}
             </span>
             <span style={{ color: 'var(--muted-foreground)', fontSize: 12.5 }}>
@@ -201,12 +203,12 @@ export function MatchCard({ match, userPrediction }: MatchCardProps) {
             display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap',
           }}>
             <span style={{ fontWeight: 600 }}>You predicted:</span>
-            <span style={{ color: 'var(--foreground)', fontWeight: 600 }}>
-              {userPrediction.predicted_winner === 'home'
-                ? `${match.home_flag} ${match.home_team}`
-                : userPrediction.predicted_winner === 'away'
-                ? `${match.away_flag} ${match.away_team}`
-                : 'Draw'}
+            <span style={{ color: 'var(--foreground)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              {userPrediction.predicted_winner === 'home' ? (
+                <><Flag code={getTeamCode(match.home_team)} size={16} /> {match.home_team}</>
+              ) : userPrediction.predicted_winner === 'away' ? (
+                <><Flag code={getTeamCode(match.away_team)} size={16} /> {match.away_team}</>
+              ) : 'Draw'}
               {userPrediction.goal_difference ? ` +${userPrediction.goal_difference}` : ''}
             </span>
             {userPrediction.points_earned > 0 ? (

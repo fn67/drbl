@@ -4,6 +4,8 @@ import { getUser } from '@/lib/auth'
 import { computeStatus, getInitials } from '@/lib/utils'
 import { PendingVotes } from '@/components/pending-votes'
 import { LogoutButton } from '@/components/logout-button'
+import { Flag } from '@/components/flag'
+import { getTeamCode } from '@/lib/teams'
 
 export default async function MySpacePage() {
   const supabase = await createClient()
@@ -128,16 +130,16 @@ export default async function MySpacePage() {
                   return (
                     <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '15px 18px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', flexWrap: 'wrap' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 9, flex: 1, minWidth: 180 }}>
-                        <span style={{ fontSize: 22 }}>{m.home_flag}</span>
+                        <Flag code={getTeamCode(m.home_team)} size={22} />
                         <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--foreground)' }}>{m.home_team}</span>
                         <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--muted-foreground)' }}>vs</span>
-                        <span style={{ fontSize: 22 }}>{m.away_flag}</span>
+                        <Flag code={getTeamCode(m.away_team)} size={22} />
                         <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--foreground)' }}>{m.away_team}</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '5px 11px', borderRadius: 999, background: 'rgba(98,200,150,0.10)', border: '1px solid rgba(98,200,150,0.25)', fontSize: 13, fontWeight: 700, color: 'oklch(0.85 0.10 164)' }}>
                         <span style={{ fontSize: 11, fontWeight: 600, color: 'oklch(0.78 0.06 164)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Your pick</span>
-                        {pred?.predicted_winner === 'home' ? `${m.home_flag} ${m.home_team}` :
-                         pred?.predicted_winner === 'away' ? `${m.away_flag} ${m.away_team}` : 'Draw'}
+                        {pred?.predicted_winner === 'home' ? <><Flag code={getTeamCode(m.home_team)} size={14} /> {m.home_team}</> :
+                         pred?.predicted_winner === 'away' ? <><Flag code={getTeamCode(m.away_team)} size={14} /> {m.away_team}</> : 'Draw'}
                         {pred?.goal_difference ? ` +${pred.goal_difference}` : ''}
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)' }}>
@@ -169,17 +171,17 @@ export default async function MySpacePage() {
                     <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '15px 6px', borderBottom: isLast ? 'none' : '1px solid var(--border)', flexWrap: 'wrap' }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                          <span style={{ fontSize: 22 }}>{m.home_flag}</span>
+                          <Flag code={getTeamCode(m.home_team)} size={22} />
                           <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--foreground)' }}>{m.home_team}</span>
                           <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--muted-foreground)' }}>vs</span>
-                          <span style={{ fontSize: 22 }}>{m.away_flag}</span>
+                          <Flag code={getTeamCode(m.away_team)} size={22} />
                           <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--foreground)' }}>{m.away_team}</span>
                         </div>
                         <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)', marginTop: 4 }}>
                           Predicted{' '}
-                          <span style={{ color: 'var(--foreground)' }}>
-                            {p.predicted_winner === 'home' ? `${m.home_flag} ${m.home_team}` :
-                             p.predicted_winner === 'away' ? `${m.away_flag} ${m.away_team}` : 'Draw'}
+                          <span style={{ color: 'var(--foreground)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            {p.predicted_winner === 'home' ? <><Flag code={getTeamCode(m.home_team)} size={12} /> {m.home_team}</> :
+                             p.predicted_winner === 'away' ? <><Flag code={getTeamCode(m.away_team)} size={12} /> {m.away_team}</> : 'Draw'}
                             {p.goal_difference ? ` +${p.goal_difference}` : ''}
                           </span>
                           <span style={{ opacity: 0.4, margin: '0 7px' }}>·</span>

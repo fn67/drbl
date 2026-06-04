@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Flag } from '@/components/flag'
+import { getTeamCode } from '@/lib/teams'
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false)
@@ -215,7 +217,7 @@ export function VoterReveal({
       {/* Three columns */}
       <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 12 }}>
         <VoterColumn
-          header={<span>{homeFlag} {homeTeam}</span>}
+          header={<span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Flag code={getTeamCode(homeTeam)} size={18} />{homeTeam}</span>}
           sub="Win prediction"
           voters={votersHome}
           completed={completed}
@@ -229,7 +231,7 @@ export function VoterReveal({
           isWinner={completed && winner === 'draw'}
         />
         <VoterColumn
-          header={<span>{awayFlag} {awayTeam}</span>}
+          header={<span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Flag code={getTeamCode(awayTeam)} size={18} />{awayTeam}</span>}
           sub="Win prediction"
           voters={votersAway}
           completed={completed}

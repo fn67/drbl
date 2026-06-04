@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { Match, Prediction, PredictedWinner } from '@/types'
+import { Flag } from '@/components/flag'
+import { getTeamCode } from '@/lib/teams'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
@@ -104,7 +106,7 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
       {/* Team toggles */}
       <div style={{ display: 'flex', gap: 10 }}>
         <button style={togglePillStyle(pick === 'home')} onClick={() => setPick('home')}>
-          <span style={{ fontSize: 22 }}>{match.home_flag}</span>
+          <Flag code={getTeamCode(match.home_team)} size={22} />
           {match.home_team}
         </button>
         {!isKnockout && (
@@ -113,7 +115,7 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
           </button>
         )}
         <button style={togglePillStyle(pick === 'away')} onClick={() => setPick('away')}>
-          <span style={{ fontSize: 22 }}>{match.away_flag}</span>
+          <Flag code={getTeamCode(match.away_team)} size={22} />
           {match.away_team}
         </button>
       </div>
@@ -125,9 +127,10 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
             <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--muted-foreground)' }}>
               Win by how many goals?
             </span>
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)' }}>
-              {pick === 'home' ? `${match.home_flag} ${match.home_team}` : `${match.away_flag} ${match.away_team}`}
-              {' '}<span style={{ color: 'var(--primary)', fontWeight: 700 }}>+{diff ?? '?'}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+              <Flag code={getTeamCode(pick === 'home' ? match.home_team : match.away_team)} size={14} />
+              {pick === 'home' ? match.home_team : match.away_team}
+              <span style={{ color: 'var(--primary)', fontWeight: 700 }}>+{diff ?? '?'}</span>
             </span>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>

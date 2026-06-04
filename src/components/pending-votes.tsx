@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 import { Match } from '@/types'
+import { Flag } from '@/components/flag'
+import { getTeamCode } from '@/lib/teams'
 
 interface PendingVotesProps {
   matches: Match[]
@@ -53,8 +55,8 @@ export function PendingVotes({ matches }: PendingVotesProps) {
               border: '1px solid rgba(255,255,255,0.07)',
               textDecoration: 'none',
             }}>
-              <span style={{ fontSize: 22, lineHeight: 1 }}>{m.home_flag}</span>
-              <span style={{ fontSize: 22, lineHeight: 1, marginLeft: -4 }}>{m.away_flag}</span>
+              <Flag code={getTeamCode(m.home_team)} size={22} />
+              <Flag code={getTeamCode(m.away_team)} size={22} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--foreground)' }}>{m.home_team} vs {m.away_team}</div>
                 <div style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--muted-foreground)', marginTop: 1 }}>

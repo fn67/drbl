@@ -5,6 +5,8 @@ import { getUser } from '@/lib/auth'
 import { computeStatus, getAvatarColor, getInitials } from '@/lib/utils'
 import { VoteForm } from '@/components/vote-form'
 import { VoterReveal } from '@/components/voter-reveal'
+import { Flag } from '@/components/flag'
+import { getTeamCode } from '@/lib/teams'
 import { Toaster } from '@/components/ui/sonner'
 
 interface PageProps {
@@ -101,7 +103,7 @@ export default async function MatchDetailPage({ params }: PageProps) {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 10, flex: 1 }}>
-              <div style={{ width: 80, height: 80, borderRadius: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 52, lineHeight: 1 }}>{match.home_flag}</div>
+              <div style={{ width: 80, height: 80, borderRadius: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Flag code={getTeamCode(match.home_team)} size={52} /></div>
               <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--foreground)', letterSpacing: -0.3 }}>{match.home_team}</div>
             </div>
 
@@ -120,7 +122,7 @@ export default async function MatchDetailPage({ params }: PageProps) {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10, flex: 1 }}>
-              <div style={{ width: 80, height: 80, borderRadius: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 52, lineHeight: 1 }}>{match.away_flag}</div>
+              <div style={{ width: 80, height: 80, borderRadius: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Flag code={getTeamCode(match.away_team)} size={52} /></div>
               <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--foreground)', letterSpacing: -0.3, textAlign: 'right' }}>{match.away_team}</div>
             </div>
           </div>

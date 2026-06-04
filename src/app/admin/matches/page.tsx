@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Match } from '@/types'
 import { TEAMS, GROUPS } from '@/lib/teams'
+import { Flag } from '@/components/flag'
 import { computeStatus } from '@/lib/utils'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
@@ -80,7 +81,7 @@ function TeamSelect({ value, onChange, exclude, label }: {
         >
           <span style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
             {selected ? (
-              <><span style={{ fontSize: 18, lineHeight: 1 }}>{selected.flag}</span><span style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selected.name}</span></>
+              <><Flag code={selected.code} size={18} /><span style={{ fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{selected.name}</span></>
             ) : (
               <span>Select team…</span>
             )}
@@ -137,7 +138,7 @@ function TeamSelect({ value, onChange, exclude, label }: {
                     onMouseEnter={e => { if (t.name !== value) e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
                     onMouseLeave={e => { if (t.name !== value) e.currentTarget.style.background = 'transparent' }}
                   >
-                    <span style={{ fontSize: 18, lineHeight: 1 }}>{t.flag}</span>
+                    <Flag code={t.code} size={18} />
                     <span style={{ fontSize: 13.5, fontWeight: 600 }}>{t.name}</span>
                     <span style={{ marginLeft: 'auto', fontSize: 11, fontWeight: 600, color: 'var(--muted-foreground)', opacity: 0.7 }}>{t.group}</span>
                   </button>
@@ -223,7 +224,7 @@ export default function AdminMatchesPage() {
     const kickoff_at = `${kickoff_date}T${kickoff_time}:00Z`
     const payload = {
       home_team, away_team,
-      home_flag: homeData.flag, away_flag: awayData.flag,
+      home_flag: homeData.code, away_flag: awayData.code,
       kickoff_at, round,
       group_name: round === 'Group Stage' ? group_name : '',
     }
@@ -312,7 +313,7 @@ export default function AdminMatchesPage() {
                   const kickoff = new Date(m.kickoff_at)
                   return (
                     <TableRow key={m.id}>
-                      <TableCell><div style={{ fontWeight: 600 }}>{m.home_flag} {m.home_team} vs {m.away_flag} {m.away_team}</div></TableCell>
+                      <TableCell><div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}><Flag code={TEAMS.find(t => t.name === m.home_team)?.code ?? 'un'} size={18} />{m.home_team} vs <Flag code={TEAMS.find(t => t.name === m.away_team)?.code ?? 'un'} size={18} />{m.away_team}</div></TableCell>
                       <TableCell style={{ fontSize: 13, color: 'var(--muted-foreground)' }}>
                         {kickoff.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })}{' '}
                         {kickoff.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}

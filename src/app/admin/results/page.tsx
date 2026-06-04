@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { Match } from '@/types'
 import { computeStatus } from '@/lib/utils'
+import { Flag } from '@/components/flag'
+import { getTeamCode } from '@/lib/teams'
 import { toast } from 'sonner'
 import { Toaster } from '@/components/ui/sonner'
 import { Input } from '@/components/ui/input'
@@ -79,7 +81,7 @@ export default function AdminResultsPage() {
               return (
                 <div key={m.id} style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
                   <div style={{ flex: 1, minWidth: 200 }}>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--foreground)' }}>{m.home_flag} {m.home_team} vs {m.away_flag} {m.away_team}</div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: 8 }}><Flag code={getTeamCode(m.home_team)} size={18} />{m.home_team} vs <Flag code={getTeamCode(m.away_team)} size={18} />{m.away_team}</div>
                     <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 3 }}>
                       {m.group_name ? `${m.group_name} · ` : ''}{m.round}
                       {isCompleted && m.home_score !== null && (
