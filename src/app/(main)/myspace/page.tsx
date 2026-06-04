@@ -203,7 +203,7 @@ export default async function MySpacePage() {
           )}
         </>
       )}
-      <div style={{ paddingTop: 4, paddingBottom: 8 }}>
+      <div className="md:hidden" style={{ paddingTop: 4, paddingBottom: 8 }}>
         <LogoutButton />
       </div>
     </div>
