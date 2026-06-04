@@ -81,11 +81,19 @@ const VoterRow = ({ voter, completed }: { voter: Voter; completed: boolean }) =>
       </div>
       {completed && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
-          <span style={{
-            fontSize: 14, fontWeight: 700,
-            color: correct ? 'oklch(0.78 0.13 164)' : 'rgba(255,255,255,0.35)',
-            lineHeight: 1,
-          }}>{correct ? '✓' : '✗'}</span>
+          {correct ? (
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                 stroke="oklch(0.72 0.115 164)" strokeWidth="2.5"
+                 strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+          ) : (
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                 stroke="oklch(0.62 0.18 25)" strokeWidth="2.5"
+                 strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          )}
           <span style={{
             fontSize: 11, fontWeight: 700,
             color: correct ? 'oklch(0.78 0.13 164)' : 'rgba(255,255,255,0.4)',
