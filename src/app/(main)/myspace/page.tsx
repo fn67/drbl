@@ -128,28 +128,32 @@ export default async function MySpacePage() {
                   const kickoff = new Date(m.kickoff_at)
                   const hoursUntil = Math.max(0, Math.ceil((kickoff.getTime() - Date.now()) / 3600000))
                   return (
-                    <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '15px 18px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', flexWrap: 'wrap' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 9, flex: 1, minWidth: 180 }}>
-                        <Flag code={getTeamCode(m.home_team)} size={22} />
+                    <div key={m.id} style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '14px 18px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }}>
+                      {/* Row 1: teams */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                        <Flag code={getTeamCode(m.home_team)} size={20} />
                         <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--foreground)' }}>{m.home_team}</span>
-                        <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--muted-foreground)' }}>vs</span>
-                        <Flag code={getTeamCode(m.away_team)} size={22} />
+                        <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)' }}>vs</span>
+                        <Flag code={getTeamCode(m.away_team)} size={20} />
                         <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--foreground)' }}>{m.away_team}</span>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '5px 11px', borderRadius: 999, background: 'rgba(98,200,150,0.10)', border: '1px solid rgba(98,200,150,0.25)', fontSize: 13, fontWeight: 700, color: 'oklch(0.85 0.10 164)' }}>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: 'oklch(0.78 0.06 164)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Your pick</span>
-                        {pred?.predicted_winner === 'home' ? <><Flag code={getTeamCode(m.home_team)} size={14} /> {m.home_team}</> :
-                         pred?.predicted_winner === 'away' ? <><Flag code={getTeamCode(m.away_team)} size={14} /> {m.away_team}</> : 'Draw'}
-                        {pred?.goal_difference ? ` +${pred.goal_difference}` : ''}
+                      {/* Row 2: pick badge + lock time + edit */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 8px', borderRadius: 999, background: 'rgba(98,200,150,0.10)', border: '1px solid rgba(98,200,150,0.25)', fontSize: 11.5, fontWeight: 700, color: 'oklch(0.85 0.10 164)' }}>
+                          <span style={{ fontSize: 10, fontWeight: 600, color: 'oklch(0.78 0.06 164)', textTransform: 'uppercase', letterSpacing: 0.4 }}>Your pick</span>
+                          {pred?.predicted_winner === 'home' ? <><Flag code={getTeamCode(m.home_team)} size={12} /> {m.home_team}</> :
+                           pred?.predicted_winner === 'away' ? <><Flag code={getTeamCode(m.away_team)} size={12} /> {m.away_team}</> : 'Draw'}
+                          {pred?.goal_difference ? ` +${pred.goal_difference}` : ''}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: 'var(--muted-foreground)' }}>
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                          Locks in {hoursUntil}h
+                        </div>
+                        <Link href={`/match/${m.id}`} style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 10px', borderRadius: 999, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.03)', color: 'var(--foreground)', textDecoration: 'none', fontSize: 11.5, fontWeight: 600 }}>
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                          Edit
+                        </Link>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)' }}>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-                        Locks in {hoursUntil}h
-                      </div>
-                      <Link href={`/match/${m.id}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 999, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.03)', color: 'var(--foreground)', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                        Edit
-                      </Link>
                     </div>
                   )
                 })}
