@@ -112,7 +112,19 @@ export function PredictionsModal({ user, open, onClose }: PredictionsModalProps)
                     </div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
-                    <span style={{ fontSize: 16, lineHeight: 1 }}>{p.correct ? '✅' : '❌'}</span>
+                    {p.correct ? (
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                           stroke="oklch(0.72 0.115 164)" strokeWidth="2.5"
+                           strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 6L9 17l-5-5"/>
+                      </svg>
+                    ) : (
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                           stroke="oklch(0.62 0.18 25)" strokeWidth="2.5"
+                           strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                      </svg>
+                    )}
                     <span style={{ fontSize: 12.5, fontWeight: 700, color: p.correct ? 'oklch(0.78 0.13 164)' : 'var(--muted-foreground)' }}>{p.correct ? `+${p.pts}` : '0'} pts</span>
                   </div>
                 </div>
