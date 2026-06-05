@@ -78,7 +78,7 @@ export function MatchTimeline({ matches, predictions }: Props) {
               background: active ? 'var(--primary)' : 'transparent',
               color: active ? 'var(--primary-foreground)' : 'rgba(255,255,255,0.62)',
               cursor: 'pointer', whiteSpace: 'nowrap', letterSpacing: 0.1, textTransform: 'capitalize',
-              boxShadow: active ? '0 2px 0 rgba(0,0,0,0.25), 0 6px 14px -4px rgba(98,200,150,0.55)' : 'none',
+              boxShadow: 'none',
             }}>
               {t}
               <span style={{

@@ -106,7 +106,7 @@ export default async function MySpacePage() {
             <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--foreground)', letterSpacing: -0.3 }}>No predictions yet</div>
             <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--muted-foreground)', marginTop: 8, maxWidth: 320, lineHeight: 1.5 }}>Your predictions will appear here once you start voting on matches.</div>
           </div>
-          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 9, background: 'var(--primary)', color: 'var(--primary-foreground)', textDecoration: 'none', fontWeight: 700, fontSize: 15, letterSpacing: 0.2, padding: '14px 22px', borderRadius: 'calc(var(--radius) - 4px)', boxShadow: '0 2px 0 rgba(0,0,0,0.25), 0 10px 22px -6px rgba(98,200,150,0.6)' }}>
+          <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 9, background: 'var(--primary)', color: 'var(--primary-foreground)', textDecoration: 'none', fontWeight: 700, fontSize: 15, letterSpacing: 0.2, padding: '14px 22px', borderRadius: 'calc(var(--radius) - 4px)', boxShadow: 'none' }}>
             Go to matches
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </Link>

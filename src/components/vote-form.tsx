@@ -84,9 +84,7 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
     cursor: 'pointer',
     letterSpacing: 0.1,
     transition: 'all .15s',
-    boxShadow: active
-      ? 'inset 0 1px 0 rgba(255,255,255,0.05)'
-      : 'inset 0 1px 0 rgba(255,255,255,0.03)',
+    boxShadow: 'none',
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
   } as React.CSSProperties)
 
@@ -176,9 +174,7 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
                   background: active ? 'rgba(98, 200, 150, 0.15)' : 'rgba(255,255,255,0.04)',
                   color: 'var(--foreground)',
                   cursor: 'pointer',
-                  boxShadow: active
-                    ? 'inset 0 1px 0 rgba(255,255,255,0.05)'
-                    : 'inset 0 1px 0 rgba(255,255,255,0.03)',
+                  boxShadow: 'none',
                 }}>
                   +{n}
                 </button>
@@ -198,7 +194,7 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
         borderRadius: 'calc(var(--radius) - 4px)',
         cursor: canSubmit && !isSubmitting ? 'pointer' : 'not-allowed',
         opacity: isSubmitting ? 0.7 : 1,
-        boxShadow: canSubmit ? '0 2px 0 rgba(0,0,0,0.25), 0 10px 20px -6px rgba(98,200,150,0.6)' : 'none',
+        boxShadow: 'none',
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
         marginTop: 4, transition: 'all .15s',
       }}>

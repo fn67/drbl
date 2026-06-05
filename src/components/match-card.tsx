@@ -151,7 +151,7 @@ export function MatchCard({ match, userPrediction }: MatchCardProps) {
               fontWeight: 700, fontSize: 14, letterSpacing: 0.1,
               padding: '11px 18px', borderRadius: 'calc(var(--radius) - 4px)',
               cursor: 'pointer',
-              boxShadow: '0 2px 0 rgba(0,0,0,0.25), 0 6px 14px -4px rgba(98, 200, 150, 0.5)',
+              boxShadow: 'none',
               display: 'inline-flex', alignItems: 'center', gap: 8,
             }}>
               Cast your prediction
