@@ -158,16 +158,9 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
       {/* Goal diff row */}
       {isTeam && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--muted-foreground)' }}>
-              Win by how many goals?
-            </span>
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-              <Flag code={getTeamCode(pick === 'home' ? match.home_team : match.away_team)} size={14} />
-              {pick === 'home' ? match.home_team : match.away_team}
-              <span style={{ color: 'var(--primary)', fontWeight: 700 }}>+{diff ?? '?'}</span>
-            </span>
-          </div>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--muted-foreground)' }}>
+            Win by how many goals?
+          </span>
           <div style={{ display: 'flex', gap: 8 }}>
             {([1, 2, 3, 4, '5+'] as const).map((n) => {
               const val = n === '5+' ? 5 : n
