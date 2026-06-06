@@ -39,7 +39,6 @@ export default async function MySpacePage() {
   const totalPoints = (leaderboard as { total_points: number } | null)?.total_points ?? 0
   const totalPredicted = (leaderboard as { total_predictions: number } | null)?.total_predictions ?? 0
   const totalCorrect = (leaderboard as { correct_predictions: number } | null)?.correct_predictions ?? 0
-  const accuracy = totalPredicted > 0 ? Math.round((totalCorrect / totalPredicted) * 100) : 0
   const hasAnyPredictions = (predictions ?? []).length > 0
   const initials = user?.name ? getInitials(user.name) : '?'
 
@@ -84,7 +83,7 @@ export default async function MySpacePage() {
           {[
             { value: totalPredicted, label: 'predicted' },
             { value: totalCorrect, label: 'correct' },
-            { value: `${accuracy}%`, label: 'accuracy' },
+            { value: pendingMatches.length, label: 'pending' },
           ].map(({ value, label }) => (
             <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '7px 13px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', borderRadius: 999 }}>
               <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--foreground)', fontVariantNumeric: 'tabular-nums' }}>{value}</span>
