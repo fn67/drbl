@@ -39,7 +39,6 @@ export default async function MySpacePage() {
   const totalPoints = (leaderboard as { total_points: number } | null)?.total_points ?? 0
   const totalPredicted = (leaderboard as { total_predictions: number } | null)?.total_predictions ?? 0
   const totalCorrect = (leaderboard as { correct_predictions: number } | null)?.correct_predictions ?? 0
-  const accuracy = totalPredicted > 0 ? Math.round((totalCorrect / totalPredicted) * 100) : 0
   const hasAnyPredictions = (predictions ?? []).length > 0
   const initials = user?.name ? getInitials(user.name) : '?'
 
@@ -55,7 +54,7 @@ export default async function MySpacePage() {
       <PendingVotes matches={pendingMatches} />
 
       {/* Profile card */}
-      <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '24px 26px', boxShadow: '0 1px 0 rgba(255,255,255,0.05) inset, 0 16px 40px -18px rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column', gap: 10, position: 'relative', overflow: 'hidden' }}>
+      {/* <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '24px 26px', boxShadow: '0 1px 0 rgba(255,255,255,0.05) inset, 0 16px 40px -18px rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column', gap: 10, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: -60, right: -40, width: 240, height: 240, background: 'radial-gradient(circle, rgba(98,200,150,0.14) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{ width: 52, height: 52, borderRadius: 999, flexShrink: 0, background: 'linear-gradient(135deg, #E8C887 0%, #C99A4B 100%)', color: 'rgba(0,0,0,0.75)', fontWeight: 700, fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.35), 0 8px 24px -8px rgba(0,0,0,0.5)', border: '2px solid rgba(255,255,255,0.14)' }}>{initials}</div>
@@ -84,7 +83,7 @@ export default async function MySpacePage() {
           {[
             { value: totalPredicted, label: 'predicted' },
             { value: totalCorrect, label: 'correct' },
-            { value: `${accuracy}%`, label: 'accuracy' },
+            { value: pendingMatches.length, label: 'pending' },
           ].map(({ value, label }) => (
             <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '7px 13px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', borderRadius: 999 }}>
               <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--foreground)', fontVariantNumeric: 'tabular-nums' }}>{value}</span>
@@ -92,7 +91,7 @@ export default async function MySpacePage() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {!hasAnyPredictions ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 20, padding: '80px 40px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }}>
