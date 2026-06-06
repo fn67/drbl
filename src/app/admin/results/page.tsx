@@ -13,6 +13,7 @@ export default function AdminResultsPage() {
   const [matches, setMatches] = useState<Match[]>([])
   const [loading, setLoading] = useState(true)
   const [scores, setScores] = useState<Record<string, { home: string; away: string }>>({})
+  const [overrides, setOverrides] = useState<Record<string, 'home' | 'away'>>({})
   const [overriding, setOverriding] = useState<string | null>(null)
 
   useEffect(() => {
@@ -40,10 +41,18 @@ export default function AdminResultsPage() {
     const away = parseInt(s.away)
     if (isNaN(home) || isNaN(away) || home < 0 || away < 0) { toast.error('Scores must be valid numbers'); return }
 
+    const m = matches.find(m => m.id === id)!
+    const needsOverride = m.round !== 'Group Stage' && home === away
+    if (needsOverride && !overrides[id]) { toast.error('Select the penalty winner before approving'); return }
+
     const res = await fetch(`/api/admin/results/${id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ homeScore: home, awayScore: away }),
+      body: JSON.stringify({
+        homeScore: home,
+        awayScore: away,
+        winnerOverride: needsOverride ? overrides[id] : null,
+      }),
     })
     if (!res.ok) {
       const { error } = await res.json()
@@ -58,6 +67,7 @@ export default function AdminResultsPage() {
   const handleOverride = (id: string) => {
     const m = matches.find(m => m.id === id)!
     setScores(s => ({ ...s, [id]: { home: String(m.home_score ?? ''), away: String(m.away_score ?? '') } }))
+    if (m.winner_override) setOverrides(o => ({ ...o, [id]: m.winner_override as 'home' | 'away' }))
     setOverriding(id)
   }
 
@@ -78,6 +88,12 @@ export default function AdminResultsPage() {
               const s = scores[m.id] ?? { home: '', away: '' }
               const isCompleted = m.status === 'completed'
               const isOverriding = overriding === m.id
+              const homeVal = parseInt(s.home)
+              const awayVal = parseInt(s.away)
+              const scoresEntered = s.home !== '' && s.away !== '' && !isNaN(homeVal) && !isNaN(awayVal)
+              const needsOverride = m.round !== 'Group Stage' && scoresEntered && homeVal === awayVal
+              const canApprove = scoresEntered && (!needsOverride || !!overrides[m.id])
+
               return (
                 <div key={m.id} style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
                   <div style={{ flex: 1, minWidth: 200 }}>
@@ -93,13 +109,34 @@ export default function AdminResultsPage() {
                     {isCompleted ? 'Completed' : 'Live'}
                   </span>
                   {(!isCompleted || isOverriding) ? (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <Input type="number" min="0" max="99" value={s.home} onChange={e => setScore(m.id, 'home', e.target.value)} placeholder="0" style={{ width: 64, textAlign: 'center' }} />
-                      <span style={{ fontWeight: 700, color: 'var(--muted-foreground)' }}>–</span>
-                      <Input type="number" min="0" max="99" value={s.away} onChange={e => setScore(m.id, 'away', e.target.value)} placeholder="0" style={{ width: 64, textAlign: 'center' }} />
-                      <button onClick={() => handleApprove(m.id)} style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', border: 'none', fontFamily: 'inherit', fontWeight: 700, fontSize: 14, padding: '9px 16px', borderRadius: 'var(--radius)', cursor: 'pointer', whiteSpace: 'nowrap' }}>Approve result</button>
-                      {isOverriding && (
-                        <button onClick={() => setOverriding(null)} style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--muted-foreground)', fontFamily: 'inherit', fontWeight: 600, fontSize: 13, padding: '9px 14px', borderRadius: 'var(--radius)', cursor: 'pointer' }}>Cancel</button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <Input type="number" min="0" max="99" value={s.home} onChange={e => setScore(m.id, 'home', e.target.value)} placeholder="0" style={{ width: 64, textAlign: 'center' }} />
+                        <span style={{ fontWeight: 700, color: 'var(--muted-foreground)' }}>–</span>
+                        <Input type="number" min="0" max="99" value={s.away} onChange={e => setScore(m.id, 'away', e.target.value)} placeholder="0" style={{ width: 64, textAlign: 'center' }} />
+                        <button onClick={() => handleApprove(m.id)} disabled={!canApprove} style={{ background: canApprove ? 'var(--primary)' : 'var(--muted)', color: canApprove ? 'var(--primary-foreground)' : 'var(--muted-foreground)', border: 'none', fontFamily: 'inherit', fontWeight: 700, fontSize: 14, padding: '9px 16px', borderRadius: 'var(--radius)', cursor: canApprove ? 'pointer' : 'not-allowed', whiteSpace: 'nowrap', boxShadow: 'none' }}>Approve result</button>
+                        {isOverriding && (
+                          <button onClick={() => setOverriding(null)} style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--muted-foreground)', fontFamily: 'inherit', fontWeight: 600, fontSize: 13, padding: '9px 14px', borderRadius: 'var(--radius)', cursor: 'pointer' }}>Cancel</button>
+                        )}
+                      </div>
+                      {needsOverride && (
+                        <div style={{ padding: '12px 14px', borderRadius: 'calc(var(--radius) - 2px)', background: 'rgba(240,170,80,0.08)', border: '1px solid rgba(240,170,80,0.22)' }}>
+                          <div style={{ fontSize: 12.5, fontWeight: 600, color: 'oklch(0.85 0.10 80)', marginBottom: 8 }}>
+                            Scores are level — select penalty winner:
+                          </div>
+                          <div style={{ display: 'flex', gap: 8 }}>
+                            {(['home', 'away'] as const).map(side => {
+                              const team = side === 'home' ? m.home_team : m.away_team
+                              const active = overrides[m.id] === side
+                              return (
+                                <button key={side} onClick={() => setOverrides(o => ({ ...o, [m.id]: side }))}
+                                  style={{ fontFamily: 'inherit', fontSize: 13, fontWeight: 700, padding: '7px 14px', borderRadius: 'calc(var(--radius) - 2px)', border: active ? '1.5px solid oklch(0.85 0.10 80)' : '1px solid rgba(240,170,80,0.30)', background: active ? 'rgba(240,170,80,0.18)' : 'rgba(255,255,255,0.03)', color: active ? 'oklch(0.90 0.10 80)' : 'var(--muted-foreground)', cursor: 'pointer' }}>
+                                  {team}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
                       )}
                     </div>
                   ) : (

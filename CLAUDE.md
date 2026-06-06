@@ -138,6 +138,7 @@ export interface Match {
   home_score: number | null
   away_score: number | null
   manually_locked: boolean
+  winner_override: 'home' | 'away' | null  // penalty/shootout winner for knockout draws
   created_at: string
 }
 
@@ -225,6 +226,9 @@ Admin can manually override lock/unlock at any time.
 - Draw prediction: **10 points only** (no goal difference field)
 - Wrong prediction: **0 points**
 - Knockout rounds: **no draw option shown**
+- Penalty/shootout wins: winner_override determines the winner.
+  Actual goal diff is 0 so nobody earns the 15pt bonus.
+  Correct winner prediction earns 10pts.
 
 ---
 
@@ -285,6 +289,10 @@ Admin can manually override lock/unlock at any time.
 ### 7. Admin — Results `/admin/results`
 - Enter scores and approve results
 - Triggers calculate_points() on approval
+- Penalty override: when round is not Group Stage and scores are equal,
+  inline penalty winner selector appears automatically
+- Admin selects winning team, saved as winner_override in matches table
+- Approve button disabled until winner selected in penalty scenario
 
 ---
 
@@ -346,7 +354,6 @@ Never run seed on production.
 - Dark mode is default — test every component in dark
 - Use Quicksand font — loaded via Google Fonts in layout.tsx
 - Flags use flag-icons with circular style — never emoji flags
-- No ranking visuals anywhere in the app — no crowns, medals, rank numbers, or special top-N treatments. All leaderboard rows look identical except the current user green border highlight.
 - Never commit automatically — always wait for explicit instruction to commit
   Exception: long autonomous build sessions (phases) where committing per section is expected
 
@@ -381,6 +388,8 @@ Never use: "update", "fix stuff", "wip", "changes".
 - Always check if a shadcn component exists before building custom
 - Floating navbar must use backdrop-blur and position fixed
 - Voter reveal is always three columns: home | draw | away
+- Exception: knockout matches (Round of 16+) — hide Draw column entirely
+- Draw column hidden in voter reveal for same rounds as vote form
 - Goal difference field only appears when home or away selected (not draw)
 - Draw option hidden for Round of 16 and beyond
 - Vote % bar hidden when status is voting_open
@@ -390,3 +399,7 @@ Never use: "update", "fix stuff", "wip", "changes".
 - Name displayed everywhere comes from public.users name field — never from auth session email directly
 - User row in public.users is created automatically by handle_new_user trigger on first login
 - Do not add manual user creation code anywhere — it conflicts with the trigger
+- Always use getMatchWinner(match) helper to determine winner — never inline score comparison
+  getMatchWinner checks winner_override first, then falls back to score comparison
+- winner_override takes precedence over scores everywhere: match cards, match detail, 
+  voter reveal highlight, points calculation, "You predicted" result display

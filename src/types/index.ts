@@ -23,6 +23,7 @@ export interface Match {
   home_score: number | null
   away_score: number | null
   manually_locked: boolean
+  winner_override: 'home' | 'away' | null
   created_at: string
 }
 

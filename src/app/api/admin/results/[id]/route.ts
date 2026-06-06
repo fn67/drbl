@@ -10,11 +10,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const { data: profile } = await supabase.from('users').select('is_admin').eq('id', user.id).single()
   if (!(profile as { is_admin: boolean } | null)?.is_admin) return Response.json({ error: 'Forbidden' }, { status: 403 })
 
-  const { homeScore, awayScore } = await request.json()
+  const { homeScore, awayScore, winnerOverride } = await request.json()
 
   const { error: updateError } = await supabase
     .from('matches')
-    .update({ status: 'completed', home_score: homeScore, away_score: awayScore })
+    .update({
+      status: 'completed',
+      home_score: homeScore,
+      away_score: awayScore,
+      winner_override: winnerOverride ?? null,
+    })
     .eq('id', id)
 
   if (updateError) return Response.json({ error: updateError.message }, { status: 400 })
