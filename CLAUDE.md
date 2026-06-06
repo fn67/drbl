@@ -253,6 +253,11 @@ Admin can manually override lock/unlock at any time.
 ### 3. Match Detail `/match/[id]`
 - Shareable URL
 - Three states: voting_open, locked, completed
+- Vote form confirm button disabled by default — enables only when valid selection made
+- Vote form edit state: shows change indicator "Mexico +5 → Mexico +3" 
+  using same arrow icon as Update prediction button
+  Left side: saved prediction (static), Right side: current selection (live)
+  Only shows arrow when selection differs from saved
 
 ### 4. Leaderboard `/leaderboard`
 - No rank numbers
@@ -275,6 +280,7 @@ Admin can manually override lock/unlock at any time.
 - Admin link in navbar for admin users only
 - Searchable team dropdowns using teams.ts
 - Group dropdown only shows when Round is Group Stage
+- Sidebar is fixed — only content area scrolls
 
 ### 7. Admin — Results `/admin/results`
 - Enter scores and approve results
@@ -285,7 +291,11 @@ Admin can manually override lock/unlock at any time.
 ## Navbar
 
 Floating pill — centered, fixed, frosted glass effect.
+Max width: max-w-4xl — same as content area.
 Contents: logo + DRBL | Matches · Leaderboard · My Space · Admin (admin only) | 🏆 pts | avatar
+
+Logo: /public/logo.svg — use as Next.js Image, 32x32px in navbar.
+Favicon: src/app/favicon.ico
 
 Avatar circle:
 - Clickable — opens dropdown with name, email, logout
@@ -325,6 +335,9 @@ Never run seed on production.
 
 - Never use HTML `<form>` tags — always use `onClick` handlers
 - Never hardcode colors — always use CSS variables
+- Global content width: max-w-4xl on all pages
+- Logo: always use /public/logo.svg — never text or icon placeholder
+- No glow or box-shadow effects on any buttons
 - Always TypeScript — never use `any`
 - Mobile first — every component must work at 375px width
 - Never install new packages without flagging it first
