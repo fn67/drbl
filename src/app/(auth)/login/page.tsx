@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase'
 
 export default function LoginPage() {
@@ -23,19 +24,9 @@ export default function LoginPage() {
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24,
         boxShadow: '0 32px 64px -24px rgba(0,0,0,0.5)',
       }}>
-        <div style={{
-          width: 52, height: 52, borderRadius: 14,
-          background: 'linear-gradient(135deg, oklch(0.72 0.115 164) 0%, oklch(0.5 0.09 164) 100%)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="8" stroke="white" strokeWidth="1.8" fill="none"/>
-            <path d="M12 4 L13.5 9 L18 9.5 L14.5 12.5 L16 17 L12 14.5 L8 17 L9.5 12.5 L6 9.5 L10.5 9 Z"
-                  fill="white" opacity="0.95"/>
-          </svg>
-        </div>
+        <Image src="/logo.svg" alt="DRBL" width={80} height={80} unoptimized />
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--foreground)', letterSpacing: -0.5 }}>DRBL</div>
+          <div style={{ fontFamily: 'var(--font-outfit), sans-serif', fontSize: 32, fontWeight: 900, color: 'var(--foreground)', letterSpacing: 4 }}>DRBL</div>
           <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--muted-foreground)', marginTop: 4 }}>
             FIFA World Cup 2026 · Office League
           </div>
