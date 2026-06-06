@@ -4,6 +4,7 @@ import { getUser } from '@/lib/auth'
 import { computeStatus, getInitials } from '@/lib/utils'
 import { PendingVotes } from '@/components/pending-votes'
 import { LogoutButton } from '@/components/logout-button'
+import { HowItWorksButton } from '@/components/how-it-works-button'
 import { Flag } from '@/components/flag'
 import { getTeamCode } from '@/lib/teams'
 
@@ -200,7 +201,8 @@ export default async function MySpacePage() {
           )}
         </>
       )}
-      <div className="md:hidden" style={{ paddingTop: 4, paddingBottom: 8 }}>
+      <div className="md:hidden" style={{ paddingTop: 4, paddingBottom: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <HowItWorksButton />
         <LogoutButton />
       </div>
     </div>

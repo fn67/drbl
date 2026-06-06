@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { HowItWorksContent } from './how-it-works-content'
 
 interface NavbarProps {
   points?: number
@@ -19,6 +21,7 @@ export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail, 
   const pathname = usePathname()
   const router = useRouter()
   const [open, setOpen] = useState(false)
+  const [helpOpen, setHelpOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -59,6 +62,7 @@ export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail, 
   const dividerCol = 'rgba(255,255,255,0.10)'
 
   return (
+    <>
     <div className="fixed top-6 left-0 right-0 z-50 hidden md:flex justify-center px-4 pointer-events-none">
       <div className="w-full max-w-4xl" style={{
         pointerEvents: 'auto',
@@ -167,6 +171,29 @@ export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail, 
                 </div>
                 <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '0 6px' }} />
                 <button
+                  onClick={() => { setOpen(false); setHelpOpen(true) }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 9,
+                    width: '100%', marginTop: 6,
+                    padding: '9px 12px', borderRadius: 9,
+                    background: 'transparent', border: 'none',
+                    color: 'var(--foreground)', cursor: 'pointer',
+                    fontFamily: 'inherit', fontWeight: 600, fontSize: 13.5,
+                    transition: 'background .12s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <path d="M12 17h.01"/>
+                  </svg>
+                  Help
+                </button>
+                <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '0 6px' }} />
+                <button
                   onClick={handleLogout}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 9,
@@ -194,5 +221,17 @@ export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail, 
         </div>
       </div>
     </div>
+
+    <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
+      <DialogContent style={{ background: 'var(--card)', border: '1px solid var(--border)', maxWidth: 480 }}>
+        <DialogHeader>
+          <DialogTitle style={{ fontSize: 17, fontWeight: 700, color: 'var(--foreground)' }}>
+            How DRBL works
+          </DialogTitle>
+        </DialogHeader>
+        <HowItWorksContent />
+      </DialogContent>
+    </Dialog>
+    </>
   )
 }
