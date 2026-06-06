@@ -30,7 +30,8 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
   const originalPick = existingPrediction?.predicted_winner ?? null
   const originalDiff = existingPrediction?.goal_difference ?? null
   const selectionComplete = pick !== null && (pick === 'draw' || diff !== null)
-  const hasChanged = !existingPrediction || pick !== originalPick || diff !== originalDiff
+  const effectiveDiff = pick === 'draw' ? null : diff
+  const hasChanged = !existingPrediction || pick !== originalPick || effectiveDiff !== originalDiff
   const canSubmit = selectionComplete && hasChanged
 
   const formatPick = (winner: PredictedWinner | null, goalDiff: number | null): string | null => {
@@ -51,7 +52,7 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
       const res = await fetch('/api/predictions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ matchId: match.id, predictedWinner: pick, goalDifference: diff }),
+        body: JSON.stringify({ matchId: match.id, predictedWinner: pick, goalDifference: effectiveDiff }),
       })
       if (!res.ok) {
         const { error } = await res.json()
