@@ -26,6 +26,8 @@ interface Voter {
   bonus?: number
 }
 
+const KNOCKOUT_ROUNDS = ['Round of 16', 'Quarter Final', 'Semi Final', 'Final']
+
 interface VoterRevealProps {
   homeTeam: string
   homeFlag: string
@@ -36,6 +38,7 @@ interface VoterRevealProps {
   votersAway: Voter[]
   completed: boolean
   winner?: 'home' | 'draw' | 'away'
+  round: string
 }
 
 const VoterRow = ({ voter, completed }: { voter: Voter; completed: boolean }) => {
@@ -170,9 +173,10 @@ const VoterColumn = ({
 export function VoterReveal({
   homeTeam, homeFlag, awayTeam, awayFlag,
   votersHome, votersDraw, votersAway,
-  completed, winner,
+  completed, winner, round,
 }: VoterRevealProps) {
   const isMobile = useIsMobile()
+  const isKnockout = KNOCKOUT_ROUNDS.includes(round)
   const total = votersHome.length + votersDraw.length + votersAway.length
   const correct = completed
     ? (winner === 'home' ? votersHome : winner === 'draw' ? votersDraw : votersAway)
@@ -231,13 +235,15 @@ export function VoterReveal({
           completed={completed}
           isWinner={completed && winner === 'home'}
         />
-        <VoterColumn
-          header="Draw"
-          sub="No goal diff needed"
-          voters={votersDraw}
-          completed={completed}
-          isWinner={completed && winner === 'draw'}
-        />
+        {!isKnockout && (
+          <VoterColumn
+            header="Draw"
+            sub="No goal diff needed"
+            voters={votersDraw}
+            completed={completed}
+            isWinner={completed && winner === 'draw'}
+          />
+        )}
         <VoterColumn
           header={<span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Flag code={getTeamCode(awayTeam)} size={18} />{awayTeam}</span>}
           sub="Win prediction"
