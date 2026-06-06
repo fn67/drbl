@@ -36,9 +36,10 @@ function getInitials(name: string) {
 interface LeaderboardListProps {
   entries: LeaderboardEntry[]
   currentUserId: string
+  isFiltered?: boolean
 }
 
-export function LeaderboardList({ entries, currentUserId }: LeaderboardListProps) {
+export function LeaderboardList({ entries, currentUserId, isFiltered = false }: LeaderboardListProps) {
   const [modalUser, setModalUser] = useState<(LeaderboardEntry & {
     initials: string; color: string;
     predictions: { match: string; prediction: string; result: string; pts: number; correct: boolean }[]
@@ -58,7 +59,7 @@ export function LeaderboardList({ entries, currentUserId }: LeaderboardListProps
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {entries.map((entry, idx) => {
           const isMe = entry.user_id === currentUserId
-          const isTop3 = idx < 3
+          const isTop3 = !isFiltered && idx < 3
           const initials = getInitials(entry.name)
           const color = AVATAR_COLORS[idx % AVATAR_COLORS.length]
           const medalRing = MEDAL_RING[idx as 0 | 1 | 2]

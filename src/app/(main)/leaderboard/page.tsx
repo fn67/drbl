@@ -1,18 +1,24 @@
 import { createClient } from '@/lib/supabase-server'
 import { getUser } from '@/lib/auth'
-import { LeaderboardList } from '@/components/leaderboard-list'
+import { LeaderboardClient } from '@/components/leaderboard-client'
 
 export default async function LeaderboardPage() {
   const supabase = await createClient()
   const user = await getUser()
 
-  const [{ data: entries }, { data: matchCount }] = await Promise.all([
-    supabase.from('leaderboard').select('*'),
+  const [leaderboardResult, matchResult] = await Promise.all([
+    supabase
+      .from('leaderboard')
+      .select('*', { count: 'exact' })
+      .order('total_points', { ascending: false })
+      .order('name', { ascending: true })
+      .range(0, 49),
     supabase.from('matches').select('id', { count: 'exact' }).eq('status', 'completed'),
   ])
 
-  const playerCount = (entries ?? []).length
-  const completedCount = (matchCount as unknown as { count: number } | null)?.count ?? 0
+  const entries = leaderboardResult.data ?? []
+  const playerCount = leaderboardResult.count ?? 0
+  const completedCount = (matchResult.data as unknown as { count: number } | null)?.count ?? 0
 
   return (
     <div>
@@ -36,7 +42,11 @@ export default async function LeaderboardPage() {
         </div>
       </div>
 
-      <LeaderboardList entries={entries ?? []} currentUserId={user?.id ?? ''} />
+      <LeaderboardClient
+        initialEntries={entries}
+        totalCount={playerCount}
+        currentUserId={user?.id ?? ''}
+      />
     </div>
   )
 }

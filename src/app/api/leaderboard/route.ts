@@ -1,10 +1,28 @@
 import { createClient } from '@/lib/supabase-server'
 
-export async function GET() {
+const PAGE_SIZE = 50
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const search = searchParams.get('search')?.trim() ?? ''
+  const offset = Math.max(0, parseInt(searchParams.get('offset') ?? '0', 10))
+
   const supabase = await createClient()
-  const { data, error } = await supabase
+
+  let query = supabase
     .from('leaderboard')
-    .select('*')
+    .select('*', { count: 'exact' })
+    .order('total_points', { ascending: false })
+    .order('name', { ascending: true })
+
+  if (search) {
+    query = query.ilike('name', `%${search}%`)
+  } else {
+    query = query.range(offset, offset + PAGE_SIZE - 1)
+  }
+
+  const { data, error, count } = await query
+
   if (error) return Response.json({ error: error.message }, { status: 500 })
-  return Response.json(data ?? [])
+  return Response.json({ entries: data ?? [], total: count ?? 0 })
 }
