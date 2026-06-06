@@ -60,13 +60,7 @@ export default async function MySpacePage() {
           <div style={{ width: 52, height: 52, borderRadius: 999, flexShrink: 0, background: 'linear-gradient(135deg, #E8C887 0%, #C99A4B 100%)', color: 'rgba(0,0,0,0.75)', fontWeight: 700, fontSize: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.35), 0 8px 24px -8px rgba(0,0,0,0.5)', border: '2px solid rgba(255,255,255,0.14)' }}>{initials}</div>
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--foreground)', letterSpacing: -0.4 }}>{user?.name ?? '—'}</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--muted-foreground)', marginTop: 3 }}>
-              <svg width="13" height="13" viewBox="0 0 23 23" fill="none" style={{ flexShrink: 0 }}>
-                <rect x="1" y="1" width="10" height="10" fill="#f25022"/>
-                <rect x="12" y="1" width="10" height="10" fill="#7fba00"/>
-                <rect x="1" y="12" width="10" height="10" fill="#00a4ef"/>
-                <rect x="12" y="12" width="10" height="10" fill="#ffb900"/>
-              </svg>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--muted-foreground)', marginTop: 3 }}>
               {user?.email ?? '—'}
             </div>
           </div>
