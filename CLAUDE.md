@@ -346,6 +346,7 @@ Never run seed on production.
 - Dark mode is default — test every component in dark
 - Use Quicksand font — loaded via Google Fonts in layout.tsx
 - Flags use flag-icons with circular style — never emoji flags
+- No ranking visuals anywhere in the app — no crowns, medals, rank numbers, or special top-N treatments. All leaderboard rows look identical except the current user green border highlight.
 - Never commit automatically — always wait for explicit instruction to commit
   Exception: long autonomous build sessions (phases) where committing per section is expected
 

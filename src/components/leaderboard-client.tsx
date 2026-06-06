@@ -107,7 +107,7 @@ export function LeaderboardClient({ initialEntries, totalCount, currentUserId }:
           )}
         </div>
       ) : (
-        <LeaderboardList entries={entries} currentUserId={currentUserId} isFiltered={isSearchActive} />
+        <LeaderboardList entries={entries} currentUserId={currentUserId} />
       )}
 
       {hasMore && (

@@ -9,12 +9,6 @@ const AVATAR_COLORS = [
   '#C887E8', '#E8A887', '#87A8E8', '#A8E887', '#E887A8',
 ]
 
-const MEDAL_RING = {
-  0: 'oklch(0.82 0.14 90)',
-  1: 'oklch(0.82 0.01 250)',
-  2: 'oklch(0.66 0.10 50)',
-}
-
 const MOCK_PREDICTIONS_PER_USER: Record<string, { match: string; prediction: string; result: string; pts: number; correct: boolean }[]> = {
   u1: [
     { match: 'Brazil vs Argentina', prediction: '🇧🇷 Brazil +2', result: '🇧🇷 Brazil +1', pts: 10, correct: true },
@@ -36,10 +30,9 @@ function getInitials(name: string) {
 interface LeaderboardListProps {
   entries: LeaderboardEntry[]
   currentUserId: string
-  isFiltered?: boolean
 }
 
-export function LeaderboardList({ entries, currentUserId, isFiltered = false }: LeaderboardListProps) {
+export function LeaderboardList({ entries, currentUserId }: LeaderboardListProps) {
   const [modalUser, setModalUser] = useState<(LeaderboardEntry & {
     initials: string; color: string;
     predictions: { match: string; prediction: string; result: string; pts: number; correct: boolean }[]
@@ -59,59 +52,37 @@ export function LeaderboardList({ entries, currentUserId, isFiltered = false }: 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {entries.map((entry, idx) => {
           const isMe = entry.user_id === currentUserId
-          const isTop3 = !isFiltered && idx < 3
           const initials = getInitials(entry.name)
           const color = AVATAR_COLORS[idx % AVATAR_COLORS.length]
-          const medalRing = MEDAL_RING[idx as 0 | 1 | 2]
 
           return (
             <div key={entry.user_id} style={{
               display: 'flex', alignItems: 'center', gap: 10,
-              padding: isTop3 ? '9px 14px' : '7px 14px',
+              padding: '7px 14px',
               borderRadius: 'var(--radius)',
               background: isMe
                 ? 'linear-gradient(90deg, rgba(98,200,150,0.12), rgba(98,200,150,0.04) 40%, var(--card))'
-                : isTop3
-                ? 'oklch(0.30 0.027 264)'
                 : 'var(--card)',
               border: isMe ? '1px solid rgba(98,200,150,0.35)' : '1px solid var(--border)',
-              borderLeft: isMe ? '3px solid var(--primary)' : isTop3 ? '1px solid var(--border)' : '1px solid var(--border)',
-              boxShadow: isTop3
-                ? '0 1px 0 rgba(255,255,255,0.05) inset, 0 10px 28px -14px rgba(0,0,0,0.55)'
-                : '0 1px 0 rgba(255,255,255,0.03) inset',
+              borderLeft: isMe ? '3px solid var(--primary)' : '1px solid var(--border)',
+              boxShadow: '0 1px 0 rgba(255,255,255,0.03) inset',
             }}>
               {/* Avatar */}
-              <div style={{ position: 'relative', flexShrink: 0, width: isTop3 ? 34 : 30, height: isTop3 ? 34 : 30 }}>
+              <div style={{ flexShrink: 0, width: 30, height: 30 }}>
                 <div style={{
-                  width: isTop3 ? 34 : 30, height: isTop3 ? 34 : 30,
+                  width: 30, height: 30,
                   borderRadius: 999, background: color,
-                  color: 'rgba(0,0,0,0.72)', fontWeight: 700, fontSize: isTop3 ? 13 : 11,
+                  color: 'rgba(0,0,0,0.72)', fontWeight: 700, fontSize: 11,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: isTop3
-                    ? `inset 0 1px 0 rgba(255,255,255,0.35), 0 0 0 2px ${medalRing}, 0 0 14px -2px ${medalRing}`
-                    : 'inset 0 1px 0 rgba(255,255,255,0.3)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3)',
                   border: '1.5px solid rgba(255,255,255,0.12)',
                 }}>{initials}</div>
-                {isTop3 && (
-                  <div style={{
-                    position: 'absolute', bottom: -2, right: -2,
-                    width: 14, height: 14,
-                    borderRadius: 999, background: medalRing,
-                    border: '2px solid var(--card)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: `0 2px 6px -1px ${medalRing}`,
-                  }}>
-                    <svg width="7" height="7" viewBox="0 0 24 24" fill="rgba(0,0,0,0.6)">
-                      <path d="M12 2l2.6 6.3L21 9l-5 4.6L17.5 21 12 17.3 6.5 21 8 13.6 3 9l6.4-.7z"/>
-                    </svg>
-                  </div>
-                )}
               </div>
 
               {/* Name + stats — single line */}
               <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
                 <span style={{
-                  fontSize: isTop3 ? 13.5 : 12.5, fontWeight: 600, color: 'var(--foreground)',
+                  fontSize: 12.5, fontWeight: 600, color: 'var(--foreground)',
                   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flexShrink: 1,
                 }}>{entry.name}</span>
                 {isMe && (
@@ -137,7 +108,7 @@ export function LeaderboardList({ entries, currentUserId, isFiltered = false }: 
               {/* Points */}
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 2, flexShrink: 0 }}>
                 <span style={{
-                  fontSize: isTop3 ? 19 : 17, fontWeight: 700,
+                  fontSize: 17, fontWeight: 700,
                   color: 'var(--foreground)', fontVariantNumeric: 'tabular-nums',
                   letterSpacing: -0.5, lineHeight: 1,
                 }}>{entry.total_points.toLocaleString()}</span>
