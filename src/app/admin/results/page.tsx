@@ -99,7 +99,7 @@ export default function AdminResultsPage() {
                   <div style={{ flex: 1, minWidth: 200 }}>
                     <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: 8 }}><Flag code={getTeamCode(m.home_team)} size={18} />{m.home_team} vs <Flag code={getTeamCode(m.away_team)} size={18} />{m.away_team}</div>
                     <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 3 }}>
-                      {m.group_name ? `${m.group_name} · ` : ''}{m.round}
+                      {m.group_name ? `${m.group_name} · ` : ''}{m.round} · {new Date(m.kickoff_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}
                       {isCompleted && m.home_score !== null && (
                         <span style={{ marginLeft: 10, fontWeight: 700, color: 'var(--foreground)' }}>Final: {m.home_score} – {m.away_score}</span>
                       )}

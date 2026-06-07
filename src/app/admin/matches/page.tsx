@@ -166,7 +166,7 @@ export default function AdminMatchesPage() {
   useEffect(() => {
     fetch('/api/matches')
       .then(r => r.json())
-      .then(data => setMatches(data))
+      .then((data: Match[]) => setMatches([...data].sort((a, b) => new Date(b.kickoff_at).getTime() - new Date(a.kickoff_at).getTime())))
       .catch(() => toast.error('Failed to load matches'))
       .finally(() => setLoading(false))
   }, [])
