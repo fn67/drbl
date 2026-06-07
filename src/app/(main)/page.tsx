@@ -18,5 +18,15 @@ export default async function HomePage() {
     ? await supabase.from('predictions').select('*').eq('user_id', user.id)
     : { data: [] }
 
-  return <MatchTimeline matches={matches} predictions={predictions ?? []} />
+  const { data: allVotes } = await supabase
+    .from('predictions')
+    .select('match_id, predicted_winner')
+
+  const voteCounts: Record<string, { home: number; draw: number; away: number }> = {}
+  for (const v of allVotes ?? []) {
+    if (!voteCounts[v.match_id]) voteCounts[v.match_id] = { home: 0, draw: 0, away: 0 }
+    voteCounts[v.match_id][v.predicted_winner as 'home' | 'draw' | 'away']++
+  }
+
+  return <MatchTimeline matches={matches} predictions={predictions ?? []} voteCounts={voteCounts} />
 }

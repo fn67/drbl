@@ -33,9 +33,10 @@ function groupByDate(matches: Match[]) {
 interface Props {
   matches: Match[]
   predictions: Prediction[]
+  voteCounts: Record<string, { home: number; draw: number; away: number }>
 }
 
-export function MatchTimeline({ matches, predictions }: Props) {
+export function MatchTimeline({ matches, predictions, voteCounts }: Props) {
   const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming')
 
   const upcoming = matches
@@ -106,7 +107,7 @@ export function MatchTimeline({ matches, predictions }: Props) {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {group.matches.map(m => (
-                  <MatchCard key={m.id} match={m} userPrediction={getPrediction(m.id)} />
+                  <MatchCard key={m.id} match={m} userPrediction={getPrediction(m.id)} voteCounts={voteCounts[m.id]} />
                 ))}
               </div>
             </div>

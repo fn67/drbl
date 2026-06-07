@@ -11,6 +11,7 @@ const KNOCKOUT_ROUNDS = ['Round of 16', 'Quarter Final', 'Semi Final', 'Final']
 interface MatchCardProps {
   match: Match
   userPrediction?: Prediction
+  voteCounts?: { home: number; draw: number; away: number }
 }
 
 const StatusBadge = ({ status }: { status: Match['status'] }) => {
@@ -67,7 +68,7 @@ const VoteBar = ({ homeP, drawP, awayP, homeTeam, awayTeam, isKnockout = false }
   </div>
 )
 
-export function MatchCard({ match, userPrediction }: MatchCardProps) {
+export function MatchCard({ match, userPrediction, voteCounts }: MatchCardProps) {
   const kickoffDate = new Date(match.kickoff_at)
   const timeStr = kickoffDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })
 
@@ -79,6 +80,12 @@ export function MatchCard({ match, userPrediction }: MatchCardProps) {
 
   const winner = getMatchWinner(match)
   const isKnockout = KNOCKOUT_ROUNDS.includes(match.round)
+
+  const vc = voteCounts ?? { home: 0, draw: 0, away: 0 }
+  const vTotal = vc.home + vc.draw + vc.away
+  const homeP = vTotal ? Math.round((vc.home / vTotal) * 100) : 0
+  const drawP = vTotal ? Math.round((vc.draw / vTotal) * 100) : 0
+  const awayP = vTotal ? 100 - homeP - drawP : 0
 
   return (
     <Link href={`/match/${match.id}`} style={{ textDecoration: 'none' }}>
@@ -205,7 +212,7 @@ export function MatchCard({ match, userPrediction }: MatchCardProps) {
         )}
 
         {(match.status === 'locked' || match.status === 'completed') && (
-          <VoteBar homeP={52} drawP={18} awayP={30}
+          <VoteBar homeP={homeP} drawP={drawP} awayP={awayP}
                    homeTeam={match.home_team} awayTeam={match.away_team}
                    isKnockout={isKnockout} />
         )}
