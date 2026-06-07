@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { MatchCard } from '@/components/match-card'
 import { Match, Prediction } from '@/types'
-import { createClient } from '@/lib/supabase'
 import { computeStatus } from '@/lib/utils'
 
 function formatDateLabel(isoDate: string): string {
@@ -43,6 +42,7 @@ export function MatchTimeline({ upcomingMatches, pastMatches, predictions, voteC
   const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming')
   const [displayedPast, setDisplayedPast] = useState(pastMatches)
   const [displayedVoteCounts, setDisplayedVoteCounts] = useState(voteCounts)
+  const [offset, setOffset] = useState(20)
   const [hasMore, setHasMore] = useState(pastMatches.length === 20)
   const [loadingMore, setLoadingMore] = useState(false)
 
@@ -50,31 +50,24 @@ export function MatchTimeline({ upcomingMatches, pastMatches, predictions, voteC
 
   const loadMore = async () => {
     setLoadingMore(true)
-    const supabase = createClient()
-    const offset = displayedPast.length
-    const { data: raw } = await supabase
-      .from('matches')
-      .select('*')
-      .eq('status', 'completed')
-      .order('kickoff_at', { ascending: false })
-      .range(offset, offset + 19)
-
-    const newMatches = (raw ?? []).map(m => ({ ...m, status: computeStatus(m) })) as Match[]
+    const res = await fetch(`/api/matches?offset=${offset}`)
+    const newMatches = (await res.json() as Match[]).map(m => ({ ...m, status: computeStatus(m) }))
 
     if (newMatches.length > 0) {
       const newIds = newMatches.map(m => m.id)
-      const { data: newVotes } = await supabase
-        .from('predictions')
-        .select('match_id, predicted_winner')
-        .in('match_id', newIds)
+      const votesRes = await fetch(`/api/predictions?matchIds=${newIds.join(',')}`)
+      const newVotes = votesRes.ok
+        ? (await votesRes.json() as { match_id: string; predicted_winner: string }[])
+        : []
 
       const merged = { ...displayedVoteCounts }
-      for (const v of newVotes ?? []) {
+      for (const v of newVotes) {
         if (!merged[v.match_id]) merged[v.match_id] = { home: 0, draw: 0, away: 0 }
         merged[v.match_id][v.predicted_winner as 'home' | 'draw' | 'away']++
       }
       setDisplayedPast(prev => [...prev, ...newMatches])
       setDisplayedVoteCounts(merged)
+      setOffset(prev => prev + 20)
       setHasMore(newMatches.length === 20)
     } else {
       setHasMore(false)

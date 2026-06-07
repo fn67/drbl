@@ -9,7 +9,7 @@ export default async function HomePage() {
 
   const [{ data: rawUpcoming }, { data: rawPast }] = await Promise.all([
     supabase.from('matches').select('*').neq('status', 'completed').order('kickoff_at'),
-    supabase.from('matches').select('*').eq('status', 'completed').order('kickoff_at', { ascending: false }).limit(20),
+    supabase.from('matches').select('*').eq('status', 'completed').order('kickoff_at', { ascending: false }).order('id', { ascending: false }).limit(20),
   ])
 
   const { data: userPredictions } = user
