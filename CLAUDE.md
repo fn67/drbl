@@ -251,8 +251,14 @@ Admin can manually override lock/unlock at any time.
 
 ### 2. Home `/`
 - Floating pill navbar
-- Two toggle pills: Upcoming (default) | Past
+- Two toggle pills: Upcoming (default) | Results
+  - Upcoming pill shows match count badge; Results pill has no count badge
 - Match cards grouped by date
+- Data fetching: two separate server queries
+  - Upcoming: non-completed matches, ordered by kickoff_at asc
+  - Results: completed matches only, ordered by kickoff_at desc, limit 20
+- Results tab is paginated — 20 at a time, Load more button appends next batch
+- Vote counts fetched only for locked matches (from upcoming) + currently loaded completed matches
 
 ### 3. Match Detail `/match/[id]`
 - Shareable URL

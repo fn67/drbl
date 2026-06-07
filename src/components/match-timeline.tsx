@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { MatchCard } from '@/components/match-card'
 import { Match, Prediction } from '@/types'
+import { createClient } from '@/lib/supabase'
+import { computeStatus } from '@/lib/utils'
 
 function formatDateLabel(isoDate: string): string {
   const date = new Date(isoDate + 'T00:00:00Z')
@@ -31,25 +33,56 @@ function groupByDate(matches: Match[]) {
 }
 
 interface Props {
-  matches: Match[]
+  upcomingMatches: Match[]
+  pastMatches: Match[]
   predictions: Prediction[]
   voteCounts: Record<string, { home: number; draw: number; away: number }>
 }
 
-export function MatchTimeline({ matches, predictions, voteCounts }: Props) {
+export function MatchTimeline({ upcomingMatches, pastMatches, predictions, voteCounts }: Props) {
   const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming')
-
-  const upcoming = matches
-    .filter(m => m.status !== 'completed')
-    .sort((a, b) => new Date(a.kickoff_at).getTime() - new Date(b.kickoff_at).getTime())
-
-  const past = matches
-    .filter(m => m.status === 'completed')
-    .sort((a, b) => new Date(b.kickoff_at).getTime() - new Date(a.kickoff_at).getTime())
+  const [displayedPast, setDisplayedPast] = useState(pastMatches)
+  const [displayedVoteCounts, setDisplayedVoteCounts] = useState(voteCounts)
+  const [hasMore, setHasMore] = useState(pastMatches.length === 20)
+  const [loadingMore, setLoadingMore] = useState(false)
 
   const getPrediction = (id: string) => predictions.find(p => p.match_id === id)
 
-  const display = tab === 'upcoming' ? upcoming : past
+  const loadMore = async () => {
+    setLoadingMore(true)
+    const supabase = createClient()
+    const offset = displayedPast.length
+    const { data: raw } = await supabase
+      .from('matches')
+      .select('*')
+      .eq('status', 'completed')
+      .order('kickoff_at', { ascending: false })
+      .range(offset, offset + 19)
+
+    const newMatches = (raw ?? []).map(m => ({ ...m, status: computeStatus(m) })) as Match[]
+
+    if (newMatches.length > 0) {
+      const newIds = newMatches.map(m => m.id)
+      const { data: newVotes } = await supabase
+        .from('predictions')
+        .select('match_id, predicted_winner')
+        .in('match_id', newIds)
+
+      const merged = { ...displayedVoteCounts }
+      for (const v of newVotes ?? []) {
+        if (!merged[v.match_id]) merged[v.match_id] = { home: 0, draw: 0, away: 0 }
+        merged[v.match_id][v.predicted_winner as 'home' | 'draw' | 'away']++
+      }
+      setDisplayedPast(prev => [...prev, ...newMatches])
+      setDisplayedVoteCounts(merged)
+      setHasMore(newMatches.length === 20)
+    } else {
+      setHasMore(false)
+    }
+    setLoadingMore(false)
+  }
+
+  const display = tab === 'upcoming' ? upcomingMatches : displayedPast
   const groups = groupByDate(display)
 
   return (
@@ -70,7 +103,7 @@ export function MatchTimeline({ matches, predictions, voteCounts }: Props) {
       }}>
         {(['upcoming', 'past'] as const).map((t) => {
           const active = tab === t
-          const count = t === 'upcoming' ? upcoming.length : past.length
+          const label = t === 'past' ? 'Results' : 'Upcoming'
           return (
             <button key={t} onClick={() => setTab(t)} style={{
               display: 'inline-flex', alignItems: 'center', gap: 7, fontFamily: 'inherit',
@@ -78,15 +111,17 @@ export function MatchTimeline({ matches, predictions, voteCounts }: Props) {
               border: 'none',
               background: active ? 'var(--primary)' : 'transparent',
               color: active ? 'var(--primary-foreground)' : 'rgba(255,255,255,0.62)',
-              cursor: 'pointer', whiteSpace: 'nowrap', letterSpacing: 0.1, textTransform: 'capitalize',
+              cursor: 'pointer', whiteSpace: 'nowrap', letterSpacing: 0.1,
               boxShadow: 'none',
             }}>
-              {t}
-              <span style={{
-                fontSize: 11, fontWeight: 700, padding: '1px 7px', borderRadius: 999,
-                background: active ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.06)',
-                color: active ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.55)',
-              }}>{count}</span>
+              {label}
+              {t === 'upcoming' && (
+                <span style={{
+                  fontSize: 11, fontWeight: 700, padding: '1px 7px', borderRadius: 999,
+                  background: active ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.06)',
+                  color: active ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.55)',
+                }}>{upcomingMatches.length}</span>
+              )}
             </button>
           )
         })}
@@ -107,11 +142,29 @@ export function MatchTimeline({ matches, predictions, voteCounts }: Props) {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {group.matches.map(m => (
-                  <MatchCard key={m.id} match={m} userPrediction={getPrediction(m.id)} voteCounts={voteCounts[m.id]} />
+                  <MatchCard key={m.id} match={m} userPrediction={getPrediction(m.id)} voteCounts={displayedVoteCounts[m.id]} />
                 ))}
               </div>
             </div>
           ))}
+
+          {tab === 'past' && hasMore && (
+            <button
+              onClick={loadMore}
+              disabled={loadingMore}
+              style={{
+                width: '100%', padding: '13px 18px',
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius)',
+                color: loadingMore ? 'var(--muted-foreground)' : 'var(--foreground)',
+                fontFamily: 'inherit', fontWeight: 600, fontSize: 14,
+                cursor: loadingMore ? 'default' : 'pointer',
+              }}
+            >
+              {loadingMore ? 'Loading…' : 'Load more'}
+            </button>
+          )}
         </div>
       )}
     </div>
