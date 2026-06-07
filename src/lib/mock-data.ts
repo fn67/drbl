@@ -15,6 +15,7 @@ export const MOCK_MATCHES: Match[] = [
     home_score: 2,
     away_score: 1,
     winner_override: null,
+    is_featured: false,
     created_at: '2026-06-01T00:00:00Z',
   },
   {
@@ -31,6 +32,7 @@ export const MOCK_MATCHES: Match[] = [
     home_score: null,
     away_score: null,
     winner_override: null,
+    is_featured: false,
     created_at: '2026-06-01T00:00:00Z',
   },
   {
@@ -47,6 +49,7 @@ export const MOCK_MATCHES: Match[] = [
     home_score: null,
     away_score: null,
     winner_override: null,
+    is_featured: false,
     created_at: '2026-06-01T00:00:00Z',
   },
   {
@@ -63,6 +66,7 @@ export const MOCK_MATCHES: Match[] = [
     home_score: null,
     away_score: null,
     winner_override: null,
+    is_featured: false,
     created_at: '2026-06-01T00:00:00Z',
   },
   {
@@ -79,6 +83,7 @@ export const MOCK_MATCHES: Match[] = [
     home_score: null,
     away_score: null,
     winner_override: null,
+    is_featured: false,
     created_at: '2026-06-01T00:00:00Z',
   },
   {
@@ -95,6 +100,7 @@ export const MOCK_MATCHES: Match[] = [
     home_score: 1,
     away_score: 3,
     winner_override: null,
+    is_featured: false,
     created_at: '2026-06-01T00:00:00Z',
   },
 ]

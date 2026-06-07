@@ -58,7 +58,17 @@ export function PendingVotes({ matches }: PendingVotesProps) {
               <Flag code={getTeamCode(m.home_team)} size={22} />
               <Flag code={getTeamCode(m.away_team)} size={22} />
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--foreground)' }}>{m.home_team} vs {m.away_team}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--foreground)' }}>{m.home_team} vs {m.away_team}</span>
+                  {m.is_featured && (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(240,170,80,0.18)', color: 'oklch(0.85 0.10 80)', fontSize: 10.5, fontWeight: 700, padding: '2px 6px', borderRadius: 999, letterSpacing: 0.3, flexShrink: 0 }}>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="6 3 18 3 22 9 12 22 2 9"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>
+                      </svg>
+                      2x
+                    </span>
+                  )}
+                </div>
                 <div style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--muted-foreground)', marginTop: 1 }}>
                   {m.group_name} · <span style={{ color: 'oklch(0.82 0.10 80)' }}>Closes in {hoursUntilKickoff}h</span>
                 </div>

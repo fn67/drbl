@@ -125,12 +125,20 @@ export default async function MySpacePage() {
                   return (
                     <div key={m.id} style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '14px 18px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }}>
                       {/* Row 1: teams */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 9, flexWrap: 'wrap' }}>
                         <Flag code={getTeamCode(m.home_team)} size={20} />
                         <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--foreground)' }}>{m.home_team}</span>
                         <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)' }}>vs</span>
                         <Flag code={getTeamCode(m.away_team)} size={20} />
                         <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--foreground)' }}>{m.away_team}</span>
+                        {m.is_featured && (
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(240,170,80,0.16)', color: 'oklch(0.85 0.10 80)', fontSize: 10.5, fontWeight: 700, padding: '2px 7px', borderRadius: 999, letterSpacing: 0.3 }}>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polygon points="6 3 18 3 22 9 12 22 2 9"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>
+                            </svg>
+                            2x pts
+                          </span>
+                        )}
                       </div>
                       {/* Row 2: pick badge + lock time + edit */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -161,7 +169,7 @@ export default async function MySpacePage() {
             <div>
               <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--foreground)', marginBottom: 14 }}>Prediction history</div>
               <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '0 18px' }}>
-                {completedPredictions.map((p: { id: string; match_id: string; predicted_winner: string; goal_difference: number | null; points_earned: number; matches: { home_team: string; away_team: string; home_flag: string; away_flag: string; home_score: number | null; away_score: number | null; winner_override: 'home' | 'away' | null } | null }, i: number) => {
+                {completedPredictions.map((p: { id: string; match_id: string; predicted_winner: string; goal_difference: number | null; points_earned: number; matches: { home_team: string; away_team: string; home_flag: string; away_flag: string; home_score: number | null; away_score: number | null; winner_override: 'home' | 'away' | null; is_featured?: boolean } | null }, i: number) => {
                   const m = p.matches
                   if (!m) return null
                   const correct = p.points_earned > 0
@@ -169,12 +177,20 @@ export default async function MySpacePage() {
                   return (
                     <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '15px 6px', borderBottom: isLast ? 'none' : '1px solid var(--border)', flexWrap: 'wrap' }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 9, flexWrap: 'wrap' }}>
                           <Flag code={getTeamCode(m.home_team)} size={22} />
                           <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--foreground)' }}>{m.home_team}</span>
                           <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--muted-foreground)' }}>vs</span>
                           <Flag code={getTeamCode(m.away_team)} size={22} />
                           <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--foreground)' }}>{m.away_team}</span>
+                          {m.is_featured && (
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(240,170,80,0.16)', color: 'oklch(0.85 0.10 80)', fontSize: 10.5, fontWeight: 700, padding: '2px 7px', borderRadius: 999, letterSpacing: 0.3 }}>
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polygon points="6 3 18 3 22 9 12 22 2 9"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>
+                              </svg>
+                              2x pts
+                            </span>
+                          )}
                         </div>
                         <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)', marginTop: 4 }}>
                           Predicted{' '}

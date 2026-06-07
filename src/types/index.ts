@@ -24,6 +24,7 @@ export interface Match {
   away_score: number | null
   manually_locked: boolean
   winner_override: 'home' | 'away' | null
+  is_featured: boolean
   created_at: string
 }
 

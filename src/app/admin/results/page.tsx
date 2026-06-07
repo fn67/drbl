@@ -107,7 +107,7 @@ export default function AdminResultsPage() {
               return (
                 <div key={m.id} style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
                   <div style={{ flex: 1, minWidth: 200 }}>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: 8 }}><Flag code={getTeamCode(m.home_team)} size={18} />{m.home_team} vs <Flag code={getTeamCode(m.away_team)} size={18} />{m.away_team}</div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: 8 }}><Flag code={getTeamCode(m.home_team)} size={18} />{m.home_team} vs <Flag code={getTeamCode(m.away_team)} size={18} />{m.away_team}{m.is_featured && (<span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(240,170,80,0.16)', color: 'oklch(0.85 0.10 80)', fontSize: 10.5, fontWeight: 700, padding: '2px 6px', borderRadius: 999 }}><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="6 3 18 3 22 9 12 22 2 9"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg>2x</span>)}</div>
                     <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 3 }}>
                       {m.group_name ? `${m.group_name} · ` : ''}{m.round} · {new Date(m.kickoff_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}
                       {isCompleted && m.home_score !== null && (

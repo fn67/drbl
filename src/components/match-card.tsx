@@ -102,10 +102,20 @@ export function MatchCard({ match, userPrediction, voteCounts }: MatchCardProps)
       }}>
         {/* Top row */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{
-            fontSize: 12, fontWeight: 600, letterSpacing: 0.6,
-            textTransform: 'uppercase', color: 'var(--muted-foreground)',
-          }}>{roundLabel}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{
+              fontSize: 12, fontWeight: 600, letterSpacing: 0.6,
+              textTransform: 'uppercase', color: 'var(--muted-foreground)',
+            }}>{roundLabel}</span>
+            {match.is_featured && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'rgba(240,170,80,0.16)', color: 'oklch(0.85 0.10 80)', fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 999, letterSpacing: 0.3 }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="6 3 18 3 22 9 12 22 2 9"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>
+                </svg>
+                2x pts
+              </span>
+            )}
+          </div>
           <StatusBadge status={match.status} />
         </div>
 
