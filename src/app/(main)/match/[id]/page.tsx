@@ -1,8 +1,12 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
 import { getUser } from '@/lib/auth'
-import { computeStatus, getAvatarColor, getInitials } from '@/lib/utils'
+import { computeStatus, getAvatarColor, getInitials, getMatchWinner, formatIST } from '@/lib/utils'
+import { PageTitle } from '@/components/page-title'
+
+export const metadata: Metadata = { title: 'DRBL | Match' }
 import { VoteForm } from '@/components/vote-form'
 import { VoterReveal } from '@/components/voter-reveal'
 import { Flag } from '@/components/flag'
@@ -53,8 +57,8 @@ export default async function MatchDetailPage({ params }: PageProps) {
   }
 
   const kickoffDate = new Date(match.kickoff_at)
-  const dateStr = kickoffDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
-  const timeStr = kickoffDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })
+  const dateStr = kickoffDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' })
+  const timeStr = formatIST(match.kickoff_at)
 
   const statusConfigMap: Record<string, { tone: string; label: string }> = {
     upcoming:    { tone: 'blue',  label: 'Upcoming' },
@@ -74,16 +78,12 @@ export default async function MatchDetailPage({ params }: PageProps) {
 
   const roundLabel = match.group_name ? `${match.group_name} · ${match.round}` : match.round
 
-  const winner =
-    match.status === 'completed' && match.home_score !== null && match.away_score !== null
-      ? match.home_score > match.away_score ? 'home'
-      : match.away_score > match.home_score ? 'away'
-      : 'draw'
-      : undefined
+  const winner = getMatchWinner(match)
 
   return (
     <>
       <Toaster />
+      <PageTitle title={`DRBL | ${match.home_team} vs ${match.away_team}`} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
         <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--muted-foreground)', textDecoration: 'none' }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -104,14 +104,19 @@ export default async function MatchDetailPage({ params }: PageProps) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 10, flex: 1 }}>
               <div style={{ width: 80, height: 80, borderRadius: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Flag code={getTeamCode(match.home_team)} size={52} /></div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--foreground)', letterSpacing: -0.3 }}>{match.home_team}</div>
+              <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.3, color: winner === 'home' ? 'var(--primary)' : winner === 'away' ? 'var(--muted-foreground)' : 'var(--foreground)' }}>{match.home_team}</div>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, minWidth: 120 }}>
               {match.status === 'completed' && match.home_score !== null ? (
                 <>
                   <div style={{ fontSize: 48, fontWeight: 700, color: 'var(--foreground)', fontVariantNumeric: 'tabular-nums', letterSpacing: 2, lineHeight: 1 }}>{match.home_score} – {match.away_score}</div>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted-foreground)', letterSpacing: 1.2, textTransform: 'uppercase' }}>Full time</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--muted-foreground)', letterSpacing: 1.2, textTransform: 'uppercase' }}>{match.winner_override ? 'Full time · Pens' : 'Full time'}</div>
+                  {match.winner_override && (
+                    <div style={{ fontSize: 11.5, fontWeight: 500, color: 'var(--muted-foreground)', opacity: 0.7, textAlign: 'center' }}>
+                      {match.winner_override === 'home' ? match.home_team : match.away_team} won on penalties
+                    </div>
+                  )}
                 </>
               ) : (
                 <>
@@ -123,14 +128,14 @@ export default async function MatchDetailPage({ params }: PageProps) {
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10, flex: 1 }}>
               <div style={{ width: 80, height: 80, borderRadius: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Flag code={getTeamCode(match.away_team)} size={52} /></div>
-              <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--foreground)', letterSpacing: -0.3, textAlign: 'right' }}>{match.away_team}</div>
+              <div style={{ fontSize: 22, fontWeight: 700, letterSpacing: -0.3, textAlign: 'right', color: winner === 'away' ? 'var(--primary)' : winner === 'home' ? 'var(--muted-foreground)' : 'var(--foreground)' }}>{match.away_team}</div>
             </div>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: 12, fontSize: 13, fontWeight: 600, color: 'var(--muted-foreground)' }}>
             <span>{dateStr}</span>
             <span style={{ opacity: 0.4 }}>·</span>
-            <span>{timeStr} UTC</span>
+            <span>{timeStr}</span>
           </div>
         </div>
 
@@ -144,7 +149,8 @@ export default async function MatchDetailPage({ params }: PageProps) {
             awayTeam={match.away_team} awayFlag={match.away_flag}
             votersHome={voters.home} votersDraw={voters.draw} votersAway={voters.away}
             completed={match.status === 'completed'}
-            winner={winner as 'home' | 'draw' | 'away' | undefined}
+            winner={winner}
+            round={match.round}
           />
         )}
 

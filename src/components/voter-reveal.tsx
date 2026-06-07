@@ -26,6 +26,8 @@ interface Voter {
   bonus?: number
 }
 
+const KNOCKOUT_ROUNDS = ['Round of 32', 'Round of 16', 'Quarter Final', 'Semi Final', 'Third Place Play-off', 'Final']
+
 interface VoterRevealProps {
   homeTeam: string
   homeFlag: string
@@ -36,9 +38,10 @@ interface VoterRevealProps {
   votersAway: Voter[]
   completed: boolean
   winner?: 'home' | 'draw' | 'away'
+  round: string
 }
 
-const VoterRow = ({ voter, completed }: { voter: Voter; completed: boolean }) => {
+const VoterRow = ({ voter, completed, isDraw = false }: { voter: Voter; completed: boolean; isDraw?: boolean }) => {
   const correct = completed && voter.correct === true
   const wrong = completed && voter.correct === false
   return (
@@ -67,7 +70,7 @@ const VoterRow = ({ voter, completed }: { voter: Voter; completed: boolean }) =>
           fontSize: 11.5, fontWeight: 600, color: 'var(--muted-foreground)',
           marginTop: 1, display: 'flex', alignItems: 'center', gap: 4,
         }}>
-          {voter.diff !== null && voter.diff !== undefined ? `+${voter.diff}` : 'Draw'}
+          {voter.diff !== null && voter.diff !== undefined ? `+${voter.diff}` : isDraw ? 'Draw' : null}
           {voter.bonus && (
             <span style={{
               padding: '1px 5px', borderRadius: 4,
@@ -81,11 +84,19 @@ const VoterRow = ({ voter, completed }: { voter: Voter; completed: boolean }) =>
       </div>
       {completed && (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
-          <span style={{
-            fontSize: 14, fontWeight: 700,
-            color: correct ? 'oklch(0.78 0.13 164)' : 'rgba(255,255,255,0.35)',
-            lineHeight: 1,
-          }}>{correct ? '✓' : '✗'}</span>
+          {correct ? (
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                 stroke="oklch(0.72 0.115 164)" strokeWidth="2.5"
+                 strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 6L9 17l-5-5"/>
+            </svg>
+          ) : (
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                 stroke="oklch(0.62 0.18 25)" strokeWidth="2.5"
+                 strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          )}
           <span style={{
             fontSize: 11, fontWeight: 700,
             color: correct ? 'oklch(0.78 0.13 164)' : 'rgba(255,255,255,0.4)',
@@ -98,10 +109,10 @@ const VoterRow = ({ voter, completed }: { voter: Voter; completed: boolean }) =>
 }
 
 const VoterColumn = ({
-  header, sub, voters, completed, isWinner,
+  header, sub, voters, completed, isWinner, isDraw = false,
 }: {
   header: React.ReactNode; sub: string; voters: Voter[];
-  completed: boolean; isWinner: boolean;
+  completed: boolean; isWinner: boolean; isDraw?: boolean;
 }) => (
   <div style={{
     flex: 1, minWidth: 0,
@@ -116,7 +127,7 @@ const VoterColumn = ({
     display: 'flex', flexDirection: 'column', gap: 10,
     position: 'relative',
     boxShadow: isWinner
-      ? '0 0 0 1px rgba(98, 200, 150, 0.15) inset, 0 12px 32px -10px rgba(98, 200, 150, 0.25)'
+      ? 'none'
       : '0 1px 0 rgba(255,255,255,0.04) inset, 0 8px 24px -12px rgba(0,0,0,0.4)',
   }}>
     {isWinner && (
@@ -126,7 +137,6 @@ const VoterColumn = ({
         fontSize: 10.5, fontWeight: 700, letterSpacing: 0.6,
         textTransform: 'uppercase',
         padding: '3px 9px', borderRadius: 999,
-        boxShadow: '0 4px 12px -2px rgba(98, 200, 150, 0.6)',
       }}>Correct</div>
     )}
     <div>
@@ -153,7 +163,7 @@ const VoterColumn = ({
           border: '1px dashed var(--border)', borderRadius: 'calc(var(--radius) - 6px)',
         }}>No voters</div>
       ) : voters.map((v, i) => (
-        <VoterRow key={i} voter={v} completed={completed} />
+        <VoterRow key={i} voter={v} completed={completed} isDraw={isDraw} />
       ))}
     </div>
   </div>
@@ -162,9 +172,10 @@ const VoterColumn = ({
 export function VoterReveal({
   homeTeam, homeFlag, awayTeam, awayFlag,
   votersHome, votersDraw, votersAway,
-  completed, winner,
+  completed, winner, round,
 }: VoterRevealProps) {
   const isMobile = useIsMobile()
+  const isKnockout = KNOCKOUT_ROUNDS.includes(round)
   const total = votersHome.length + votersDraw.length + votersAway.length
   const correct = completed
     ? (winner === 'home' ? votersHome : winner === 'draw' ? votersDraw : votersAway)
@@ -223,13 +234,16 @@ export function VoterReveal({
           completed={completed}
           isWinner={completed && winner === 'home'}
         />
-        <VoterColumn
-          header="Draw"
-          sub="No goal diff needed"
-          voters={votersDraw}
-          completed={completed}
-          isWinner={completed && winner === 'draw'}
-        />
+        {!isKnockout && (
+          <VoterColumn
+            header="Draw"
+            sub="No goal diff needed"
+            voters={votersDraw}
+            completed={completed}
+            isWinner={completed && winner === 'draw'}
+            isDraw={true}
+          />
+        )}
         <VoterColumn
           header={<span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Flag code={getTeamCode(awayTeam)} size={18} />{awayTeam}</span>}
           sub="Win prediction"

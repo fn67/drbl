@@ -40,11 +40,11 @@ export function PredictionsModal({ user, open, onClose }: PredictionsModalProps)
     setLoading(true)
     fetch(`/api/predictions?userId=${user.user_id}`)
       .then(r => r.json())
-      .then((data: { matches: { home_team: string; away_team: string; home_score: number | null; away_score: number | null }; predicted_winner: string; goal_difference: number | null; points_earned: number }[]) => {
+      .then((data: { matches: { home_team: string; away_team: string; home_score: number | null; away_score: number | null; winner_override: 'home' | 'away' | null }; predicted_winner: string; goal_difference: number | null; points_earned: number }[]) => {
         const rows: PredictionRow[] = (data ?? [])
           .filter((p) => p.matches && (p.matches as { home_score: number | null }).home_score !== null)
           .map((p) => {
-            const m = p.matches as { home_team: string; away_team: string; home_score: number | null; away_score: number | null }
+            const m = p.matches as { home_team: string; away_team: string; home_score: number | null; away_score: number | null; winner_override: 'home' | 'away' | null }
             const predLabel =
               p.predicted_winner === 'draw'
                 ? 'Draw'
@@ -54,7 +54,7 @@ export function PredictionsModal({ user, open, onClose }: PredictionsModalProps)
             return {
               match: `${m.home_team} vs ${m.away_team}`,
               prediction: predLabel,
-              result: `${m.home_score} – ${m.away_score}`,
+              result: `${m.home_score} – ${m.away_score}${m.winner_override ? ` (${m.winner_override === 'home' ? m.home_team : m.away_team} - pens)` : ''}`,
               pts: p.points_earned,
               correct: p.points_earned > 0,
             }
@@ -112,7 +112,19 @@ export function PredictionsModal({ user, open, onClose }: PredictionsModalProps)
                     </div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3 }}>
-                    <span style={{ fontSize: 16, lineHeight: 1 }}>{p.correct ? '✅' : '❌'}</span>
+                    {p.correct ? (
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                           stroke="oklch(0.72 0.115 164)" strokeWidth="2.5"
+                           strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 6L9 17l-5-5"/>
+                      </svg>
+                    ) : (
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                           stroke="oklch(0.62 0.18 25)" strokeWidth="2.5"
+                           strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                      </svg>
+                    )}
                     <span style={{ fontSize: 12.5, fontWeight: 700, color: p.correct ? 'oklch(0.78 0.13 164)' : 'var(--muted-foreground)' }}>{p.correct ? `+${p.pts}` : '0'} pts</span>
                   </div>
                 </div>

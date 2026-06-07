@@ -7,7 +7,7 @@ import { getTeamCode } from '@/lib/teams'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
-const KNOCKOUT_ROUNDS = ['Round of 16', 'Quarter Final', 'Semi Final', 'Final']
+const KNOCKOUT_ROUNDS = ['Round of 32', 'Round of 16', 'Quarter Final', 'Semi Final', 'Third Place Play-off', 'Final']
 
 interface VoteFormProps {
   match: Match
@@ -23,10 +23,31 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
     existingPrediction?.goal_difference ?? null
   )
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submittedPick, setSubmittedPick] = useState<PredictedWinner | null>(
+    existingPrediction?.predicted_winner ?? null
+  )
+  const [submittedDiff, setSubmittedDiff] = useState<number | null>(
+    existingPrediction?.goal_difference ?? null
+  )
 
   const isKnockout = KNOCKOUT_ROUNDS.includes(match.round)
   const isTeam = pick === 'home' || pick === 'away'
-  const canSubmit = pick !== null && (pick === 'draw' || diff !== null)
+
+  const selectionComplete = pick !== null && (pick === 'draw' || diff !== null)
+  const effectiveDiff = pick === 'draw' ? null : diff
+  const hasChanged = submittedPick === null || pick !== submittedPick || effectiveDiff !== submittedDiff
+  const canSubmit = selectionComplete && hasChanged
+
+  const formatPick = (winner: PredictedWinner | null, goalDiff: number | null): string | null => {
+    if (!winner) return null
+    if (winner === 'draw') return 'Draw'
+    const team = winner === 'home' ? match.home_team : match.away_team
+    return goalDiff !== null ? `${team} +${goalDiff}` : team
+  }
+
+  const savedLabel = submittedPick !== null ? formatPick(submittedPick, submittedDiff) : null
+  const currentLabel = selectionComplete ? formatPick(pick, pick === 'draw' ? null : diff) : null
+  const showArrow = submittedPick !== null && hasChanged && !!currentLabel
 
   const handleSubmit = async () => {
     if (!canSubmit || isSubmitting) return
@@ -35,13 +56,16 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
       const res = await fetch('/api/predictions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ matchId: match.id, predictedWinner: pick, goalDifference: diff }),
+        body: JSON.stringify({ matchId: match.id, predictedWinner: pick, goalDifference: effectiveDiff }),
       })
       if (!res.ok) {
         const { error } = await res.json()
         toast.error(error ?? 'Failed to submit prediction')
         return
       }
+      // update local submitted state so hasChanged immediately becomes false
+      setSubmittedPick(pick)
+      setSubmittedDiff(effectiveDiff)
       toast.success(existingPrediction ? 'Prediction updated!' : 'Prediction confirmed!')
       router.refresh()
     } catch {
@@ -58,19 +82,17 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
     fontWeight: 700,
     padding: '16px 12px',
     borderRadius: 'calc(var(--radius) - 2px)',
-    border: active ? '1px solid transparent' : '1px solid var(--border)',
+    border: active ? '1.5px solid var(--primary)' : '1px solid var(--border)',
     background: active
-      ? 'var(--primary)'
+      ? 'rgba(98, 200, 150, 0.15)'
       : muted ? 'rgba(255,255,255,0.025)' : 'rgba(255,255,255,0.04)',
     color: active
-      ? 'var(--primary-foreground)'
+      ? 'var(--foreground)'
       : muted ? 'rgba(255,255,255,0.55)' : 'var(--foreground)',
     cursor: 'pointer',
     letterSpacing: 0.1,
     transition: 'all .15s',
-    boxShadow: active
-      ? '0 2px 0 rgba(0,0,0,0.25), 0 8px 18px -4px rgba(98, 200, 150, 0.55)'
-      : 'inset 0 1px 0 rgba(255,255,255,0.03)',
+    boxShadow: 'none',
     display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
   } as React.CSSProperties)
 
@@ -103,6 +125,25 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
         )}
       </div>
 
+      {/* Live change indicator */}
+      {(savedLabel !== null || currentLabel !== null) && (
+        <div style={{ fontSize: 12, fontWeight: 500, marginTop: -4, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ color: 'var(--muted-foreground)', fontWeight: 600 }}>
+            {savedLabel ?? currentLabel}
+          </span>
+          {showArrow && (
+            <>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                   style={{ color: 'var(--muted-foreground)', opacity: 0.45, flexShrink: 0 }}>
+                <path d="M5 12h14M13 6l6 6-6 6"/>
+              </svg>
+              <span style={{ color: 'var(--foreground)', fontWeight: 700 }}>{currentLabel}</span>
+            </>
+          )}
+        </div>
+      )}
+
       {/* Team toggles */}
       <div style={{ display: 'flex', gap: 10 }}>
         <button style={togglePillStyle(pick === 'home')} onClick={() => setPick('home')}>
@@ -123,16 +164,9 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
       {/* Goal diff row */}
       {isTeam && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--muted-foreground)' }}>
-              Win by how many goals?
-            </span>
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)', display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-              <Flag code={getTeamCode(pick === 'home' ? match.home_team : match.away_team)} size={14} />
-              {pick === 'home' ? match.home_team : match.away_team}
-              <span style={{ color: 'var(--primary)', fontWeight: 700 }}>+{diff ?? '?'}</span>
-            </span>
-          </div>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--muted-foreground)' }}>
+            Win by how many goals?
+          </span>
           <div style={{ display: 'flex', gap: 8 }}>
             {([1, 2, 3, 4, '5+'] as const).map((n) => {
               const val = n === '5+' ? 5 : n
@@ -144,13 +178,11 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
                   fontSize: 17, fontWeight: 700,
                   padding: '13px 0',
                   borderRadius: 'calc(var(--radius) - 4px)',
-                  border: active ? '1px solid transparent' : '1px solid var(--border)',
-                  background: active ? 'var(--primary)' : 'rgba(255,255,255,0.04)',
-                  color: active ? 'var(--primary-foreground)' : 'var(--foreground)',
+                  border: active ? '1.5px solid var(--primary)' : '1px solid var(--border)',
+                  background: active ? 'rgba(98, 200, 150, 0.15)' : 'rgba(255,255,255,0.04)',
+                  color: 'var(--foreground)',
                   cursor: 'pointer',
-                  boxShadow: active
-                    ? '0 2px 0 rgba(0,0,0,0.25), 0 6px 14px -4px rgba(98, 200, 150, 0.5)'
-                    : 'inset 0 1px 0 rgba(255,255,255,0.03)',
+                  boxShadow: 'none',
                 }}>
                   +{n}
                 </button>
@@ -170,7 +202,7 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
         borderRadius: 'calc(var(--radius) - 4px)',
         cursor: canSubmit && !isSubmitting ? 'pointer' : 'not-allowed',
         opacity: isSubmitting ? 0.7 : 1,
-        boxShadow: canSubmit ? '0 2px 0 rgba(0,0,0,0.25), 0 10px 20px -6px rgba(98,200,150,0.6)' : 'none',
+        boxShadow: 'none',
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10,
         marginTop: 4, transition: 'all .15s',
       }}>

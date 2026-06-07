@@ -1,31 +1,18 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { redirect } from 'next/navigation'
 import { getUser } from '@/lib/auth'
-
-const Logo = () => (
-  <div style={{
-    width: 24, height: 24, borderRadius: 6,
-    background: 'linear-gradient(135deg, oklch(0.72 0.115 164) 0%, oklch(0.5 0.09 164) 100%)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    flexShrink: 0,
-  }}>
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="8" stroke="white" strokeWidth="1.8" fill="none"/>
-      <path d="M12 4 L13.5 9 L18 9.5 L14.5 12.5 L16 17 L12 14.5 L8 17 L9.5 12.5 L6 9.5 L10.5 9 Z"
-            fill="white" opacity="0.95"/>
-    </svg>
-  </div>
-)
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await getUser()
   if (!user?.is_admin) redirect('/')
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="h-screen overflow-hidden bg-background flex">
       {/* Sidebar */}
       <aside style={{
         width: 220, flexShrink: 0,
+        height: '100%', overflow: 'hidden',
         background: 'var(--card)',
         borderRight: '1px solid var(--border)',
         display: 'flex', flexDirection: 'column',
@@ -38,9 +25,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           borderBottom: '1px solid var(--border)',
           marginBottom: 12,
         }}>
-          <Logo />
+          <Image src="/logo.svg" alt="DRBL" width={44} height={28} unoptimized style={{ flexShrink: 0 }} />
           <div>
-            <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--foreground)' }}>DRBL</div>
+            <div style={{ fontFamily: 'var(--font-outfit), sans-serif', fontWeight: 900, fontSize: 15, color: 'var(--foreground)', letterSpacing: 1 }}>DRBL</div>
             <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--muted-foreground)', marginTop: 1 }}>Admin panel</div>
           </div>
         </div>
@@ -91,7 +78,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
       {/* Main content */}
       <main className="flex-1 p-8 overflow-auto">
-        {children}
+        <div className="max-w-6xl mx-auto">
+          {children}
+        </div>
       </main>
     </div>
   )

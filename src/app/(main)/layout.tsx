@@ -22,7 +22,7 @@ export default async function MainLayout({ children }: { children: React.ReactNo
   return (
     <div className="min-h-screen bg-background">
       <Navbar points={points} userInitials={initials} userName={user?.name} userEmail={user?.email} isAdmin={user?.is_admin} />
-      <main className="pt-24 pb-24 md:pb-8 px-4 max-w-2xl mx-auto">
+      <main className="pt-24 pb-24 md:pb-8 px-4 max-w-4xl mx-auto">
         {children}
       </main>
       <BottomNav />

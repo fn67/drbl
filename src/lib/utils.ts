@@ -35,3 +35,25 @@ export function getAvatarColor(name: string): string {
 export function getInitials(name: string): string {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
 }
+
+export function formatIST(isoString: string): string {
+  return new Date(isoString).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'Asia/Kolkata',
+  }) + ' IST'
+}
+
+export function getMatchWinner(match: {
+  status: string
+  home_score: number | null
+  away_score: number | null
+  winner_override?: 'home' | 'away' | null
+}): 'home' | 'draw' | 'away' | undefined {
+  if (match.status !== 'completed' || match.home_score === null || match.away_score === null) return undefined
+  if (match.winner_override) return match.winner_override
+  if (match.home_score > match.away_score) return 'home'
+  if (match.away_score > match.home_score) return 'away'
+  return 'draw'
+}

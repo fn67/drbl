@@ -1,29 +1,13 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
-
-const Logo = () => (
-  <div style={{
-    width: 26, height: 26, borderRadius: 8,
-    background: 'linear-gradient(135deg, oklch(0.72 0.115 164) 0%, oklch(0.5 0.09 164) 100%)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-    boxShadow:
-      'inset 0 1px 0 rgba(255,255,255,0.35), ' +
-      '0 0 0 1px rgba(255,255,255,0.06), ' +
-      '0 4px 12px -2px rgba(38, 170, 110, 0.45)',
-    flexShrink: 0,
-  }}>
-    <svg width={16} height={16} viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="8" stroke="white" strokeWidth="1.8" fill="none"/>
-      <path d="M12 4 L13.5 9 L18 9.5 L14.5 12.5 L16 17 L12 14.5 L8 17 L9.5 12.5 L6 9.5 L10.5 9 Z"
-            fill="white" opacity="0.95"/>
-    </svg>
-  </div>
-)
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { HowItWorksContent } from './how-it-works-content'
 
 interface NavbarProps {
   points?: number
@@ -37,6 +21,7 @@ export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail, 
   const pathname = usePathname()
   const router = useRouter()
   const [open, setOpen] = useState(false)
+  const [helpOpen, setHelpOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -59,7 +44,6 @@ export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail, 
     { label: 'Matches', href: '/' },
     { label: 'Leaderboard', href: '/leaderboard' },
     { label: 'My Space', href: '/myspace' },
-    ...(isAdmin ? [{ label: 'Admin', href: '/admin/matches' }] : []),
   ]
 
   const isActive = (href: string) => {
@@ -77,8 +61,9 @@ export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail, 
   const dividerCol = 'rgba(255,255,255,0.10)'
 
   return (
-    <div className="fixed top-6 left-0 right-0 z-50 hidden md:flex justify-center pointer-events-none">
-      <div style={{
+    <>
+    <div className="fixed top-6 left-0 right-0 z-50 hidden md:flex justify-center px-4 pointer-events-none">
+      <div className="w-full max-w-4xl" style={{
         pointerEvents: 'auto',
         display: 'flex', alignItems: 'center', gap: 6,
         padding: '8px 8px 8px 14px',
@@ -89,17 +74,18 @@ export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail, 
         borderRadius: 999,
         boxShadow: glassShadow,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 9, paddingRight: 10 }}>
-          <Logo />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingRight: 10 }}>
+          <Image src="/logo.svg" alt="DRBL" width={20} height={20} unoptimized style={{ flexShrink: 0 }} />
           <span style={{
-            fontWeight: 700, fontSize: 14.5, color: 'var(--foreground)',
-            letterSpacing: -0.2,
+            fontFamily: 'var(--font-outfit), sans-serif',
+            fontWeight: 900, fontSize: 18, color: 'var(--foreground)',
+            letterSpacing: 2,
           }}>
             DRBL
           </span>
         </div>
         <div style={{ width: 1, height: 22, background: dividerCol, margin: '0 4px' }} />
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, justifyContent: 'center' }}>
           {links.map((link) => (
             <Link key={link.label} href={link.href} style={{
               fontFamily: 'var(--font-quicksand), Quicksand, sans-serif',
@@ -183,6 +169,53 @@ export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail, 
                   )}
                 </div>
                 <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '0 6px' }} />
+                {isAdmin && (
+                  <Link
+                    href="/admin/matches"
+                    onClick={() => setOpen(false)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 9,
+                      width: '100%', marginTop: 6,
+                      padding: '9px 12px', borderRadius: 9,
+                      background: 'transparent', border: 'none',
+                      color: 'var(--foreground)', cursor: 'pointer',
+                      fontFamily: 'inherit', fontWeight: 600, fontSize: 13.5,
+                      textDecoration: 'none',
+                      transition: 'background .12s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/>
+                    </svg>
+                    Admin panel
+                  </Link>
+                )}
+                <button
+                  onClick={() => { setOpen(false); setHelpOpen(true) }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 9,
+                    width: '100%', marginTop: 6,
+                    padding: '9px 12px', borderRadius: 9,
+                    background: 'transparent', border: 'none',
+                    color: 'var(--foreground)', cursor: 'pointer',
+                    fontFamily: 'inherit', fontWeight: 600, fontSize: 13.5,
+                    transition: 'background .12s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <path d="M12 17h.01"/>
+                  </svg>
+                  Help
+                </button>
+                <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '0 6px' }} />
                 <button
                   onClick={handleLogout}
                   style={{
@@ -211,5 +244,17 @@ export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail, 
         </div>
       </div>
     </div>
+
+    <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
+      <DialogContent style={{ background: 'var(--card)', border: '1px solid var(--border)', maxWidth: 480 }}>
+        <DialogHeader>
+          <DialogTitle style={{ fontSize: 17, fontWeight: 700, color: 'var(--foreground)' }}>
+            How DRBL works
+          </DialogTitle>
+        </DialogHeader>
+        <HowItWorksContent />
+      </DialogContent>
+    </Dialog>
+    </>
   )
 }

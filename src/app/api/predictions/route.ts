@@ -4,7 +4,18 @@ import { computeStatus } from '@/lib/utils'
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const userId = searchParams.get('userId')
+  const matchIds = searchParams.get('matchIds')
   const supabase = await createClient()
+
+  if (matchIds) {
+    const ids = matchIds.split(',').filter(Boolean)
+    const { data, error } = await supabase
+      .from('predictions')
+      .select('match_id, predicted_winner')
+      .in('match_id', ids)
+    if (error) return Response.json({ error: error.message }, { status: 500 })
+    return Response.json(data ?? [])
+  }
 
   const query = supabase
     .from('predictions')

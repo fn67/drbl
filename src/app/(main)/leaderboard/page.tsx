@@ -1,18 +1,27 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase-server'
+
+export const metadata: Metadata = { title: 'DRBL | Leaderboard' }
 import { getUser } from '@/lib/auth'
-import { LeaderboardList } from '@/components/leaderboard-list'
+import { LeaderboardClient } from '@/components/leaderboard-client'
 
 export default async function LeaderboardPage() {
   const supabase = await createClient()
   const user = await getUser()
 
-  const [{ data: entries }, { data: matchCount }] = await Promise.all([
-    supabase.from('leaderboard').select('*'),
+  const [leaderboardResult, matchResult] = await Promise.all([
+    supabase
+      .from('leaderboard')
+      .select('*', { count: 'exact' })
+      .order('total_points', { ascending: false })
+      .order('name', { ascending: true })
+      .range(0, 49),
     supabase.from('matches').select('id', { count: 'exact' }).eq('status', 'completed'),
   ])
 
-  const playerCount = (entries ?? []).length
-  const completedCount = (matchCount as unknown as { count: number } | null)?.count ?? 0
+  const entries = leaderboardResult.data ?? []
+  const playerCount = leaderboardResult.count ?? 0
+  const completedCount = matchResult.count ?? 0
 
   return (
     <div>
@@ -25,8 +34,8 @@ export default async function LeaderboardPage() {
         </h1>
         <div style={{ display: 'flex', gap: 10 }}>
           {[
-            { value: playerCount.toLocaleString(), label: 'players' },
-            { value: String(completedCount),       label: 'matches played' },
+            { value: playerCount.toLocaleString(), label: 'users' },
+            { value: String(completedCount),       label: 'matches completed' },
           ].map(({ value, label }) => (
             <div key={label} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', borderRadius: 999, fontSize: 13, fontWeight: 600, color: 'var(--muted-foreground)' }}>
               <span style={{ color: 'var(--foreground)', fontWeight: 700 }}>{value}</span>
@@ -36,7 +45,11 @@ export default async function LeaderboardPage() {
         </div>
       </div>
 
-      <LeaderboardList entries={entries ?? []} currentUserId={user?.id ?? ''} />
+      <LeaderboardClient
+        initialEntries={entries}
+        totalCount={playerCount}
+        currentUserId={user?.id ?? ''}
+      />
     </div>
   )
 }

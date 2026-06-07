@@ -4,10 +4,14 @@ import Link from 'next/link'
 import { Match, Prediction } from '@/types'
 import { Flag } from '@/components/flag'
 import { getTeamCode } from '@/lib/teams'
+import { getMatchWinner, formatIST } from '@/lib/utils'
+
+const KNOCKOUT_ROUNDS = ['Round of 32', 'Round of 16', 'Quarter Final', 'Semi Final', 'Third Place Play-off', 'Final']
 
 interface MatchCardProps {
   match: Match
   userPrediction?: Prediction
+  voteCounts?: { home: number; draw: number; away: number }
 }
 
 const StatusBadge = ({ status }: { status: Match['status'] }) => {
@@ -34,8 +38,8 @@ const StatusBadge = ({ status }: { status: Match['status'] }) => {
   )
 }
 
-const VoteBar = ({ homeP, drawP, awayP, homeTeam, awayTeam }: {
-  homeP: number; drawP: number; awayP: number; homeTeam: string; awayTeam: string
+const VoteBar = ({ homeP, drawP, awayP, homeTeam, awayTeam, isKnockout = false }: {
+  homeP: number; drawP: number; awayP: number; homeTeam: string; awayTeam: string; isKnockout?: boolean
 }) => (
   <div style={{ marginTop: 4 }}>
     <div style={{
@@ -43,8 +47,12 @@ const VoteBar = ({ homeP, drawP, awayP, homeTeam, awayTeam }: {
       background: 'var(--muted)',
     }}>
       <div style={{ width: `${homeP}%`, background: 'oklch(0.72 0.115 164)' }} />
-      <div style={{ width: 2, background: 'var(--card)' }} />
-      <div style={{ width: `${drawP}%`, background: 'rgba(255,255,255,0.32)' }} />
+      {!isKnockout && (
+        <>
+          <div style={{ width: 2, background: 'var(--card)' }} />
+          <div style={{ width: `${drawP}%`, background: 'rgba(255,255,255,0.32)' }} />
+        </>
+      )}
       <div style={{ width: 2, background: 'var(--card)' }} />
       <div style={{ width: `${awayP}%`, background: 'oklch(0.72 0.13 230)' }} />
     </div>
@@ -54,21 +62,29 @@ const VoteBar = ({ homeP, drawP, awayP, homeTeam, awayTeam }: {
       fontWeight: 600,
     }}>
       <span>{homeTeam.split(' ')[0]} {homeP}%</span>
-      <span>Draw {drawP}%</span>
+      {!isKnockout && <span>Draw {drawP}%</span>}
       <span>{awayP}% {awayTeam.split(' ')[0]}</span>
     </div>
   </div>
 )
 
-export function MatchCard({ match, userPrediction }: MatchCardProps) {
-  const kickoffDate = new Date(match.kickoff_at)
-  const timeStr = kickoffDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })
+export function MatchCard({ match, userPrediction, voteCounts }: MatchCardProps) {
+  const timeStr = formatIST(match.kickoff_at)
 
   const hoursUntilVoting = Math.max(0, Math.ceil((new Date(match.kickoff_at).getTime() - 48 * 3600000 - Date.now()) / 3600000))
 
   const roundLabel = match.group_name
     ? `${match.group_name} · ${match.round}`
     : match.round
+
+  const winner = getMatchWinner(match)
+  const isKnockout = KNOCKOUT_ROUNDS.includes(match.round)
+
+  const vc = voteCounts ?? { home: 0, draw: 0, away: 0 }
+  const vTotal = vc.home + vc.draw + vc.away
+  const homeP = vTotal ? Math.round((vc.home / vTotal) * 100) : 0
+  const drawP = vTotal ? Math.round((vc.draw / vTotal) * 100) : 0
+  const awayP = vTotal ? 100 - homeP - drawP : 0
 
   return (
     <Link href={`/match/${match.id}`} style={{ textDecoration: 'none' }}>
@@ -99,7 +115,8 @@ export function MatchCard({ match, userPrediction }: MatchCardProps) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
             <Flag code={getTeamCode(match.home_team)} size={32} />
             <span style={{
-              fontSize: 16, fontWeight: 600, color: 'var(--foreground)',
+              fontSize: 16, fontWeight: winner === 'home' ? 700 : 600,
+              color: winner === 'home' ? 'var(--primary)' : winner === 'away' ? 'var(--muted-foreground)' : 'var(--foreground)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>{match.home_team}</span>
           </div>
@@ -129,7 +146,8 @@ export function MatchCard({ match, userPrediction }: MatchCardProps) {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0, flexDirection: 'row-reverse' }}>
             <Flag code={getTeamCode(match.away_team)} size={32} />
             <span style={{
-              fontSize: 16, fontWeight: 600, color: 'var(--foreground)',
+              fontSize: 16, fontWeight: winner === 'away' ? 700 : 600,
+              color: winner === 'away' ? 'var(--primary)' : winner === 'home' ? 'var(--muted-foreground)' : 'var(--foreground)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               textAlign: 'right',
             }}>{match.away_team}</span>
@@ -151,7 +169,7 @@ export function MatchCard({ match, userPrediction }: MatchCardProps) {
               fontWeight: 700, fontSize: 14, letterSpacing: 0.1,
               padding: '11px 18px', borderRadius: 'calc(var(--radius) - 4px)',
               cursor: 'pointer',
-              boxShadow: '0 2px 0 rgba(0,0,0,0.25), 0 6px 14px -4px rgba(98, 200, 150, 0.5)',
+              boxShadow: 'none',
               display: 'inline-flex', alignItems: 'center', gap: 8,
             }}>
               Cast your prediction
@@ -193,8 +211,9 @@ export function MatchCard({ match, userPrediction }: MatchCardProps) {
         )}
 
         {(match.status === 'locked' || match.status === 'completed') && (
-          <VoteBar homeP={52} drawP={18} awayP={30}
-                   homeTeam={match.home_team} awayTeam={match.away_team} />
+          <VoteBar homeP={homeP} drawP={drawP} awayP={awayP}
+                   homeTeam={match.home_team} awayTeam={match.away_team}
+                   isKnockout={isKnockout} />
         )}
 
         {match.status === 'completed' && userPrediction && (
@@ -213,17 +232,31 @@ export function MatchCard({ match, userPrediction }: MatchCardProps) {
             </span>
             {userPrediction.points_earned > 0 ? (
               <>
-                <span style={{ color: 'oklch(0.78 0.13 164)', fontWeight: 700 }}>✓</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                     stroke="oklch(0.72 0.115 164)" strokeWidth="2.5"
+                     strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
                 <span style={{ color: 'oklch(0.78 0.13 164)', fontWeight: 700 }}>
                   +{userPrediction.points_earned} pts
                 </span>
               </>
             ) : (
               <>
-                <span style={{ color: 'oklch(0.72 0.16 25)', fontWeight: 700 }}>✗</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                     stroke="oklch(0.62 0.18 25)" strokeWidth="2.5"
+                     strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
                 <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}>0 pts</span>
               </>
             )}
+          </div>
+        )}
+
+        {match.status === 'completed' && match.winner_override && (
+          <div style={{ fontSize: 11.5, fontWeight: 500, color: 'var(--muted-foreground)', opacity: 0.7 }}>
+            {match.winner_override === 'home' ? match.home_team : match.away_team} won on penalties
           </div>
         )}
       </div>

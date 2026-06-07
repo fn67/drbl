@@ -49,7 +49,8 @@ create table public.matches (
     check (status in ('upcoming', 'voting_open', 'locked', 'completed')),
   home_score integer,
   away_score integer,
-  manually_locked boolean default false, -- admin override
+  manually_locked boolean default false,
+  winner_override text check (winner_override in ('home', 'away')), -- penalty/shootout winner for knockout draws
   created_at timestamptz default now()
 );
 
@@ -176,8 +177,11 @@ begin
     raise exception 'Match not found or not completed';
   end if;
 
-  -- Determine actual winner
-  if match_record.home_score > match_record.away_score then
+  -- Determine actual winner (winner_override takes precedence for penalty shootouts)
+  if match_record.winner_override is not null then
+    actual_winner := match_record.winner_override;
+    actual_diff := 0; -- scores were level; no goal diff bonus possible
+  elsif match_record.home_score > match_record.away_score then
     actual_winner := 'home';
     actual_diff := match_record.home_score - match_record.away_score;
   elsif match_record.away_score > match_record.home_score then
