@@ -18,9 +18,12 @@ export default async function HomePage() {
     ? await supabase.from('predictions').select('*').eq('user_id', user.id)
     : { data: [] }
 
-  const { data: allVotes } = await supabase
-    .from('predictions')
-    .select('match_id, predicted_winner')
+  const lockedOrCompleted = matches.filter(m => m.status === 'locked' || m.status === 'completed')
+  const ids = lockedOrCompleted.map(m => m.id)
+
+  const { data: allVotes } = ids.length
+    ? await supabase.from('predictions').select('match_id, predicted_winner').in('match_id', ids)
+    : { data: [] }
 
   const voteCounts: Record<string, { home: number; draw: number; away: number }> = {}
   for (const v of allVotes ?? []) {
