@@ -295,6 +295,174 @@ const SEED_MATCHES = [
   { home_team: 'England',     away_team: 'Spain',        home_flag: 'gb-eng', away_flag: 'es',
     kickoff_at: daysFromNow(14),  round: 'Semi Final',    group_name: '',
     status: 'upcoming', home_score: null, away_score: null, manually_locked: false },
+
+  // ── Additional completed matches (M20–M65) ────────────────────────────────
+
+  // Group A
+  { home_team: 'USA',         away_team: 'New Zealand',  home_flag: 'us',     away_flag: 'nz',
+    kickoff_at: daysAgo(55), round: 'Group Stage', group_name: 'Group A',
+    status: 'completed', home_score: 1, away_score: 0, manually_locked: false },
+  { home_team: 'Brazil',      away_team: 'USA',          home_flag: 'br',     away_flag: 'us',
+    kickoff_at: daysAgo(52), round: 'Group Stage', group_name: 'Group A',
+    status: 'completed', home_score: 3, away_score: 1, manually_locked: false },
+  { home_team: 'Morocco',     away_team: 'New Zealand',  home_flag: 'ma',     away_flag: 'nz',
+    kickoff_at: daysAgo(49), round: 'Group Stage', group_name: 'Group A',
+    status: 'completed', home_score: 2, away_score: 0, manually_locked: false },
+
+  // Group B
+  { home_team: 'Germany',     away_team: 'Saudi Arabia', home_flag: 'de',     away_flag: 'sa',
+    kickoff_at: daysAgo(55), round: 'Group Stage', group_name: 'Group B',
+    status: 'completed', home_score: 3, away_score: 0, manually_locked: false },
+  { home_team: 'Mexico',      away_team: 'Colombia',     home_flag: 'mx',     away_flag: 'co',
+    kickoff_at: daysAgo(52), round: 'Group Stage', group_name: 'Group B',
+    status: 'completed', home_score: 1, away_score: 1, manually_locked: false },
+  { home_team: 'Germany',     away_team: 'Mexico',       home_flag: 'de',     away_flag: 'mx',
+    kickoff_at: daysAgo(49), round: 'Group Stage', group_name: 'Group B',
+    status: 'completed', home_score: 2, away_score: 0, manually_locked: false },
+  { home_team: 'Colombia',    away_team: 'Saudi Arabia', home_flag: 'co',     away_flag: 'sa',
+    kickoff_at: daysAgo(46), round: 'Group Stage', group_name: 'Group B',
+    status: 'completed', home_score: 1, away_score: 0, manually_locked: false },
+
+  // Group C
+  { home_team: 'England',     away_team: 'Ivory Coast',  home_flag: 'gb-eng', away_flag: 'ci',
+    kickoff_at: daysAgo(55), round: 'Group Stage', group_name: 'Group C',
+    status: 'completed', home_score: 3, away_score: 0, manually_locked: false },
+  { home_team: 'Japan',       away_team: 'Ivory Coast',  home_flag: 'jp',     away_flag: 'ci',
+    kickoff_at: daysAgo(52), round: 'Group Stage', group_name: 'Group C',
+    status: 'completed', home_score: 1, away_score: 0, manually_locked: false },
+  { home_team: 'Canada',      away_team: 'Japan',        home_flag: 'ca',     away_flag: 'jp',
+    kickoff_at: daysAgo(49), round: 'Group Stage', group_name: 'Group C',
+    status: 'completed', home_score: 0, away_score: 1, manually_locked: false },
+  { home_team: 'England',     away_team: 'Canada',       home_flag: 'gb-eng', away_flag: 'ca',
+    kickoff_at: daysAgo(46), round: 'Group Stage', group_name: 'Group C',
+    status: 'completed', home_score: 2, away_score: 1, manually_locked: false },
+
+  // Group D
+  { home_team: 'Argentina',   away_team: 'Nigeria',      home_flag: 'ar',     away_flag: 'ng',
+    kickoff_at: daysAgo(55), round: 'Group Stage', group_name: 'Group D',
+    status: 'completed', home_score: 2, away_score: 0, manually_locked: false },
+  { home_team: 'France',      away_team: 'South Korea',  home_flag: 'fr',     away_flag: 'kr',
+    kickoff_at: daysAgo(52), round: 'Group Stage', group_name: 'Group D',
+    status: 'completed', home_score: 1, away_score: 0, manually_locked: false },
+  { home_team: 'South Korea', away_team: 'Nigeria',      home_flag: 'kr',     away_flag: 'ng',
+    kickoff_at: daysAgo(49), round: 'Group Stage', group_name: 'Group D',
+    status: 'completed', home_score: 2, away_score: 1, manually_locked: false },
+
+  // Group E
+  { home_team: 'Spain',       away_team: 'Egypt',        home_flag: 'es',     away_flag: 'eg',
+    kickoff_at: daysAgo(55), round: 'Group Stage', group_name: 'Group E',
+    status: 'completed', home_score: 2, away_score: 0, manually_locked: false },
+  { home_team: 'Australia',   away_team: 'Ecuador',      home_flag: 'au',     away_flag: 'ec',
+    kickoff_at: daysAgo(52), round: 'Group Stage', group_name: 'Group E',
+    status: 'completed', home_score: 1, away_score: 1, manually_locked: false },
+  { home_team: 'Spain',       away_team: 'Ecuador',      home_flag: 'es',     away_flag: 'ec',
+    kickoff_at: daysAgo(49), round: 'Group Stage', group_name: 'Group E',
+    status: 'completed', home_score: 1, away_score: 0, manually_locked: false },
+
+  // Group F
+  { home_team: 'Portugal',    away_team: 'South Africa', home_flag: 'pt',     away_flag: 'za',
+    kickoff_at: daysAgo(55), round: 'Group Stage', group_name: 'Group F',
+    status: 'completed', home_score: 3, away_score: 1, manually_locked: false },
+  { home_team: 'Uruguay',     away_team: 'Tunisia',      home_flag: 'uy',     away_flag: 'tn',
+    kickoff_at: daysAgo(52), round: 'Group Stage', group_name: 'Group F',
+    status: 'completed', home_score: 2, away_score: 0, manually_locked: false },
+  { home_team: 'Portugal',    away_team: 'Uruguay',      home_flag: 'pt',     away_flag: 'uy',
+    kickoff_at: daysAgo(49), round: 'Group Stage', group_name: 'Group F',
+    status: 'completed', home_score: 1, away_score: 0, manually_locked: false },
+
+  // Group G
+  { home_team: 'Netherlands', away_team: 'Senegal',      home_flag: 'nl',     away_flag: 'sn',
+    kickoff_at: daysAgo(55), round: 'Group Stage', group_name: 'Group G',
+    status: 'completed', home_score: 2, away_score: 0, manually_locked: false },
+  { home_team: 'Costa Rica',  away_team: 'Jordan',       home_flag: 'cr',     away_flag: 'jo',
+    kickoff_at: daysAgo(52), round: 'Group Stage', group_name: 'Group G',
+    status: 'completed', home_score: 1, away_score: 1, manually_locked: false },
+  { home_team: 'Netherlands', away_team: 'Costa Rica',   home_flag: 'nl',     away_flag: 'cr',
+    kickoff_at: daysAgo(49), round: 'Group Stage', group_name: 'Group G',
+    status: 'completed', home_score: 3, away_score: 0, manually_locked: false },
+
+  // Group H
+  { home_team: 'Belgium',     away_team: 'Ghana',        home_flag: 'be',     away_flag: 'gh',
+    kickoff_at: daysAgo(55), round: 'Group Stage', group_name: 'Group H',
+    status: 'completed', home_score: 2, away_score: 0, manually_locked: false },
+  { home_team: 'Paraguay',    away_team: 'Qatar',        home_flag: 'py',     away_flag: 'qa',
+    kickoff_at: daysAgo(52), round: 'Group Stage', group_name: 'Group H',
+    status: 'completed', home_score: 1, away_score: 0, manually_locked: false },
+  { home_team: 'Belgium',     away_team: 'Paraguay',     home_flag: 'be',     away_flag: 'py',
+    kickoff_at: daysAgo(49), round: 'Group Stage', group_name: 'Group H',
+    status: 'completed', home_score: 3, away_score: 1, manually_locked: false },
+
+  // Group I
+  { home_team: 'Switzerland', away_team: 'Honduras',     home_flag: 'ch',     away_flag: 'hn',
+    kickoff_at: daysAgo(55), round: 'Group Stage', group_name: 'Group I',
+    status: 'completed', home_score: 2, away_score: 0, manually_locked: false },
+  { home_team: 'Cameroon',    away_team: 'Iran',         home_flag: 'cm',     away_flag: 'ir',
+    kickoff_at: daysAgo(52), round: 'Group Stage', group_name: 'Group I',
+    status: 'completed', home_score: 1, away_score: 0, manually_locked: false },
+  { home_team: 'Switzerland', away_team: 'Iran',         home_flag: 'ch',     away_flag: 'ir',
+    kickoff_at: daysAgo(49), round: 'Group Stage', group_name: 'Group I',
+    status: 'completed', home_score: 1, away_score: 1, manually_locked: false },
+
+  // Group J
+  { home_team: 'Denmark',     away_team: 'Turkey',       home_flag: 'dk',     away_flag: 'tr',
+    kickoff_at: daysAgo(55), round: 'Group Stage', group_name: 'Group J',
+    status: 'completed', home_score: 3, away_score: 1, manually_locked: false },
+  { home_team: 'Panama',      away_team: 'Iraq',         home_flag: 'pa',     away_flag: 'iq',
+    kickoff_at: daysAgo(52), round: 'Group Stage', group_name: 'Group J',
+    status: 'completed', home_score: 0, away_score: 2, manually_locked: false },
+  { home_team: 'Denmark',     away_team: 'Panama',       home_flag: 'dk',     away_flag: 'pa',
+    kickoff_at: daysAgo(49), round: 'Group Stage', group_name: 'Group J',
+    status: 'completed', home_score: 2, away_score: 0, manually_locked: false },
+
+  // Group K
+  { home_team: 'Italy',       away_team: 'Croatia',      home_flag: 'it',     away_flag: 'hr',
+    kickoff_at: daysAgo(55), round: 'Group Stage', group_name: 'Group K',
+    status: 'completed', home_score: 2, away_score: 1, manually_locked: false },
+  { home_team: 'Poland',      away_team: 'Croatia',      home_flag: 'pl',     away_flag: 'hr',
+    kickoff_at: daysAgo(52), round: 'Group Stage', group_name: 'Group K',
+    status: 'completed', home_score: 0, away_score: 0, manually_locked: false },
+  { home_team: 'Italy',       away_team: 'Poland',       home_flag: 'it',     away_flag: 'pl',
+    kickoff_at: daysAgo(49), round: 'Group Stage', group_name: 'Group K',
+    status: 'completed', home_score: 1, away_score: 0, manually_locked: false },
+
+  // Group L
+  { home_team: 'Scotland',    away_team: 'Serbia',       home_flag: 'gb-sct', away_flag: 'rs',
+    kickoff_at: daysAgo(55), round: 'Group Stage', group_name: 'Group L',
+    status: 'completed', home_score: 1, away_score: 2, manually_locked: false },
+  { home_team: 'Austria',     away_team: 'Scotland',     home_flag: 'at',     away_flag: 'gb-sct',
+    kickoff_at: daysAgo(52), round: 'Group Stage', group_name: 'Group L',
+    status: 'completed', home_score: 3, away_score: 0, manually_locked: false },
+  { home_team: 'Hungary',     away_team: 'Serbia',       home_flag: 'hu',     away_flag: 'rs',
+    kickoff_at: daysAgo(49), round: 'Group Stage', group_name: 'Group L',
+    status: 'completed', home_score: 1, away_score: 1, manually_locked: false },
+
+  // Round of 16
+  { home_team: 'Brazil',      away_team: 'Netherlands',  home_flag: 'br',     away_flag: 'nl',
+    kickoff_at: daysAgo(43), round: 'Round of 16', group_name: '',
+    status: 'completed', home_score: 2, away_score: 1, manually_locked: false },
+  { home_team: 'Spain',       away_team: 'Germany',      home_flag: 'es',     away_flag: 'de',
+    kickoff_at: daysAgo(42), round: 'Round of 16', group_name: '',
+    status: 'completed', home_score: 1, away_score: 0, manually_locked: false },
+  { home_team: 'France',      away_team: 'Argentina',    home_flag: 'fr',     away_flag: 'ar',
+    kickoff_at: daysAgo(41), round: 'Round of 16', group_name: '',
+    status: 'completed', home_score: 2, away_score: 0, manually_locked: false },
+  { home_team: 'England',     away_team: 'Denmark',      home_flag: 'gb-eng', away_flag: 'dk',
+    kickoff_at: daysAgo(40), round: 'Round of 16', group_name: '',
+    status: 'completed', home_score: 1, away_score: 0, manually_locked: false },
+  { home_team: 'Portugal',    away_team: 'Italy',        home_flag: 'pt',     away_flag: 'it',
+    kickoff_at: daysAgo(39), round: 'Round of 16', group_name: '',
+    status: 'completed', home_score: 2, away_score: 1, manually_locked: false },
+  { home_team: 'Belgium',     away_team: 'Switzerland',  home_flag: 'be',     away_flag: 'ch',
+    kickoff_at: daysAgo(38), round: 'Round of 16', group_name: '',
+    status: 'completed', home_score: 1, away_score: 0, manually_locked: false },
+
+  // Quarter Finals
+  { home_team: 'Brazil',      away_team: 'Spain',        home_flag: 'br',     away_flag: 'es',
+    kickoff_at: daysAgo(35), round: 'Quarter Final', group_name: '',
+    status: 'completed', home_score: 1, away_score: 0, manually_locked: false },
+  { home_team: 'France',      away_team: 'England',      home_flag: 'fr',     away_flag: 'gb-eng',
+    kickoff_at: daysAgo(34), round: 'Quarter Final', group_name: '',
+    status: 'completed', home_score: 2, away_score: 1, manually_locked: false },
 ]
 
 // ── Original 10-user prediction matrix ────────────────────────────────────────
@@ -530,23 +698,54 @@ async function seed() {
   if (extraPredErr) throw new Error(`insert extra predictions: ${extraPredErr.message}`)
   console.log(`  ✓ ${extraPredRows.length} predictions`)
 
-  // 5. Calculate points for 4 completed matches
-  console.log('\nCalculating points...')
-  for (let i = 0; i < 4; i++) {
+  // 5. Generate predictions for extended completed matches (M20+)
+  console.log('\nInserting extended predictions...')
+  const extendedPredRows: typeof corePredRows = []
+  for (let mi = 20; mi < SEED_MATCHES.length; mi++) {
+    const m = SEED_MATCHES[mi]
+    if (m.status !== 'completed') continue
+    const hs = m.home_score as number
+    const as_ = m.away_score as number
+    const actual: 'home' | 'draw' | 'away' = hs > as_ ? 'home' : hs < as_ ? 'away' : 'draw'
+    // 7 core users: varied picks
+    const picks: ['home' | 'draw' | 'away', number | null][] = [
+      [actual, actual !== 'draw' ? 1 : null],
+      [actual, actual !== 'draw' ? 2 : null],
+      [actual === 'home' ? 'away' : 'home', 1],
+      [actual, actual !== 'draw' ? 1 : null],
+      ['draw', null],
+      [actual === 'away' ? 'home' : 'away', 2],
+      [actual, actual !== 'draw' ? 2 : null],
+    ]
+    picks.forEach(([winner, diff], ui) => {
+      extendedPredRows.push({
+        user_id: userIds[ui],
+        match_id: matchIds[mi],
+        predicted_winner: winner,
+        goal_difference: diff,
+        points_earned: 0,
+      })
+    })
+  }
+  const { error: extPredErr } = await sb.from('predictions').insert(extendedPredRows)
+  if (extPredErr) throw new Error(`insert extended predictions: ${extPredErr.message}`)
+  console.log(`  ✓ ${extendedPredRows.length} predictions`)
+
+  // 6. Calculate points for all completed matches
+  const completedIndices = SEED_MATCHES
+    .map((m, i) => ({ m, i }))
+    .filter(({ m }) => m.status === 'completed')
+    .map(({ i }) => i)
+  console.log(`\nCalculating points (${completedIndices.length} matches)...`)
+  for (const i of completedIndices) {
     const { error } = await sb.rpc('calculate_points', { match_id_input: matchIds[i] })
     if (error) throw new Error(`calculate_points M${i}: ${error.message}`)
-    const m = SEED_MATCHES[i]
-    console.log(`  ✓ ${m.home_team} ${m.home_score}–${m.away_score} ${m.away_team}`)
+    process.stdout.write('.')
   }
+  console.log(' ✓')
 
-  const totalPreds = corePredRows.length + extraPredRows.length
-  console.log(`\n✅ Done — 150 users · ${matchIds.length} matches · ${totalPreds} predictions`)
-  console.log('\nLeaderboard shape:')
-  console.log('  Top tier  (~55 pts): 4 users  (James + 3 extras)')
-  console.log('  High      (40–50 pts): ~32 users')
-  console.log('  Mid       (20–35 pts): ~57 users')
-  console.log('  Low       (10–15 pts): ~25 users')
-  console.log('  Zero/tail  (0–10 pts): ~32 users')
+  const totalPreds = corePredRows.length + extraPredRows.length + extendedPredRows.length
+  console.log(`\n✅ Done — 150 users · ${matchIds.length} matches (50 completed) · ${totalPreds} predictions`)
 }
 
 seed().catch(err => {
