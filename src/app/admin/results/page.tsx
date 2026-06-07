@@ -15,15 +15,20 @@ export default function AdminResultsPage() {
   const [scores, setScores] = useState<Record<string, { home: string; away: string }>>({})
   const [overrides, setOverrides] = useState<Record<string, 'home' | 'away'>>({})
   const [overriding, setOverriding] = useState<string | null>(null)
+  const [approvingId, setApprovingId] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/matches')
       .then(r => r.json())
       .then((data: Match[]) => {
-        const relevant = data.filter(m => {
-          const s = computeStatus(m)
-          return s === 'locked' || s === 'completed'
-        })
+        const relevant = data
+          .filter(m => { const s = computeStatus(m); return s === 'locked' || s === 'completed' })
+          .sort((a, b) => {
+            const sa = computeStatus(a)
+            const sb = computeStatus(b)
+            if (sa !== sb) return sa === 'locked' ? -1 : 1
+            return new Date(b.kickoff_at).getTime() - new Date(a.kickoff_at).getTime()
+          })
         setMatches(relevant)
       })
       .catch(() => toast.error('Failed to load matches'))
@@ -45,6 +50,7 @@ export default function AdminResultsPage() {
     const needsOverride = m.round !== 'Group Stage' && home === away
     if (needsOverride && !overrides[id]) { toast.error('Select the penalty winner before approving'); return }
 
+    setApprovingId(id)
     const res = await fetch(`/api/admin/results/${id}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -57,10 +63,12 @@ export default function AdminResultsPage() {
     if (!res.ok) {
       const { error } = await res.json()
       toast.error(error ?? 'Failed to approve result')
+      setApprovingId(null)
       return
     }
     setMatches(ms => ms.map(m => m.id === id ? { ...m, status: 'completed', home_score: home, away_score: away } : m))
     setOverriding(null)
+    setApprovingId(null)
     toast.success('Result approved — points calculated!')
   }
 
@@ -114,10 +122,13 @@ export default function AdminResultsPage() {
                         <Input type="number" min="0" max="99" value={s.home} onChange={e => setScore(m.id, 'home', e.target.value)} placeholder="0" style={{ width: 64, textAlign: 'center' }} />
                         <span style={{ fontWeight: 700, color: 'var(--muted-foreground)' }}>–</span>
                         <Input type="number" min="0" max="99" value={s.away} onChange={e => setScore(m.id, 'away', e.target.value)} placeholder="0" style={{ width: 64, textAlign: 'center' }} />
-                        <button onClick={() => handleApprove(m.id)} disabled={!canApprove} style={{ background: canApprove ? 'var(--primary)' : 'var(--muted)', color: canApprove ? 'var(--primary-foreground)' : 'var(--muted-foreground)', border: 'none', fontFamily: 'inherit', fontWeight: 700, fontSize: 14, padding: '9px 16px', borderRadius: 'var(--radius)', cursor: canApprove ? 'pointer' : 'not-allowed', whiteSpace: 'nowrap', boxShadow: 'none' }}>Approve result</button>
+                        <button onClick={() => handleApprove(m.id)} disabled={!canApprove || approvingId === m.id} style={{ background: canApprove && approvingId !== m.id ? 'var(--primary)' : 'var(--muted)', color: canApprove && approvingId !== m.id ? 'var(--primary-foreground)' : 'var(--muted-foreground)', border: 'none', fontFamily: 'inherit', fontWeight: 700, fontSize: 14, padding: '9px 16px', borderRadius: 'var(--radius)', cursor: canApprove && approvingId !== m.id ? 'pointer' : 'not-allowed', whiteSpace: 'nowrap', boxShadow: 'none' }}>{approvingId === m.id ? 'Approving…' : 'Approve result'}</button>
                         {isOverriding && (
                           <button onClick={() => setOverriding(null)} style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--muted-foreground)', fontFamily: 'inherit', fontWeight: 600, fontSize: 13, padding: '9px 14px', borderRadius: 'var(--radius)', cursor: 'pointer' }}>Cancel</button>
                         )}
+                        <a href={`/match/${m.id}`} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', color: 'var(--muted-foreground)', padding: '9px 9px', borderRadius: 'var(--radius)', textDecoration: 'none', flexShrink: 0 }}>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                        </a>
                       </div>
                       {needsOverride && (
                         <div style={{ padding: '12px 14px', borderRadius: 'calc(var(--radius) - 2px)', background: 'rgba(240,170,80,0.08)', border: '1px solid rgba(240,170,80,0.22)' }}>
@@ -140,7 +151,12 @@ export default function AdminResultsPage() {
                       )}
                     </div>
                   ) : (
-                    <button onClick={() => handleOverride(m.id)} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', color: 'var(--foreground)', fontFamily: 'inherit', fontWeight: 600, fontSize: 13, padding: '8px 14px', borderRadius: 'var(--radius)', cursor: 'pointer' }}>Override</button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <button onClick={() => handleOverride(m.id)} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', color: 'var(--foreground)', fontFamily: 'inherit', fontWeight: 600, fontSize: 13, padding: '8px 14px', borderRadius: 'var(--radius)', cursor: 'pointer' }}>Override</button>
+                      <a href={`/match/${m.id}`} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', color: 'var(--muted-foreground)', padding: '8px 9px', borderRadius: 'var(--radius)', textDecoration: 'none', flexShrink: 0 }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                      </a>
+                    </div>
                   )}
                 </div>
               )

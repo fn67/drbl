@@ -160,6 +160,9 @@ export default function AdminMatchesPage() {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   const [editId, setEditId] = useState<string | null>(null)
   const [form, setForm] = useState(emptyForm)
+  const [saving, setSaving] = useState(false)
+  const [lockingId, setLockingId] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const isGroupStage = form.round === 'Group Stage'
 
@@ -170,6 +173,11 @@ export default function AdminMatchesPage() {
       .catch(() => toast.error('Failed to load matches'))
       .finally(() => setLoading(false))
   }, [])
+
+  const handleDialogChange = (open: boolean) => {
+    if (!open) setSaving(false)
+    setDialogOpen(open)
+  }
 
   const handleOpen = (match?: Match) => {
     if (match) {
@@ -209,6 +217,8 @@ export default function AdminMatchesPage() {
     }))
   }
 
+  const sortDesc = (ms: Match[]) => [...ms].sort((a, b) => new Date(b.kickoff_at).getTime() - new Date(a.kickoff_at).getTime())
+
   const handleSave = async () => {
     const { home_team, away_team, kickoff_date, kickoff_time, round, group_name } = form
     if (!home_team || !away_team || !kickoff_date || !kickoff_time || !round) {
@@ -220,6 +230,7 @@ export default function AdminMatchesPage() {
       return
     }
 
+    setSaving(true)
     const homeData = TEAMS.find(t => t.name === home_team)!
     const awayData = TEAMS.find(t => t.name === away_team)!
     const kickoff_at = new Date(new Date(`${kickoff_date}T${kickoff_time}:00Z`).getTime() - 330 * 60000).toISOString()
@@ -236,7 +247,7 @@ export default function AdminMatchesPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: editId, ...payload }),
       })
-      if (!res.ok) { toast.error('Failed to update match'); return }
+      if (!res.ok) { toast.error('Failed to update match'); setSaving(false); return }
       const updated = await res.json()
       setMatches(ms => ms.map(m => m.id === editId ? { ...updated, status: computeStatus(updated) } : m))
       toast.success('Match updated')
@@ -246,23 +257,26 @@ export default function AdminMatchesPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...payload, status: 'upcoming' }),
       })
-      if (!res.ok) { toast.error('Failed to create match'); return }
+      if (!res.ok) { toast.error('Failed to create match'); setSaving(false); return }
       const created = await res.json()
-      setMatches(ms => [...ms, { ...created, status: computeStatus(created) }])
+      setMatches(ms => sortDesc([...ms, { ...created, status: computeStatus(created) }]))
       toast.success('Match created')
     }
     setDialogOpen(false)
+    setSaving(false)
   }
 
   const handleDelete = async (id: string) => {
+    setDeletingId(id)
     const res = await fetch('/api/admin/matches', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
     })
-    if (!res.ok) { toast.error('Failed to delete match'); return }
+    if (!res.ok) { toast.error('Failed to delete match'); setDeletingId(null); return }
     setMatches(ms => ms.filter(m => m.id !== id))
     setDeleteConfirm(null)
+    setDeletingId(null)
     toast.success('Match deleted')
   }
 
@@ -270,11 +284,13 @@ export default function AdminMatchesPage() {
     const match = matches.find(m => m.id === id)!
     const newStatus = match.status === 'locked' ? 'voting_open' : 'locked'
     const manually_locked = newStatus === 'locked'
+    setLockingId(id)
     const res = await fetch('/api/admin/matches', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, status: newStatus, manually_locked }),
     })
+    setLockingId(null)
     if (!res.ok) { toast.error('Failed to update lock status'); return }
     setMatches(ms => ms.map(m => m.id === id ? { ...m, status: newStatus, manually_locked } : m))
   }
@@ -326,10 +342,13 @@ export default function AdminMatchesPage() {
                       <TableCell>
                         <div style={{ display: 'flex', gap: 6 }}>
                           <button onClick={() => handleOpen(m)} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', color: 'var(--foreground)', cursor: 'pointer', fontSize: 12, fontWeight: 600, padding: '5px 10px', borderRadius: 6, fontFamily: 'inherit' }}>Edit</button>
-                          <button onClick={() => handleToggleLock(m.id)} style={{ background: m.status === 'locked' ? 'rgba(240,170,80,0.1)' : 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', color: m.status === 'locked' ? 'oklch(0.85 0.10 80)' : 'var(--muted-foreground)', cursor: 'pointer', fontSize: 12, fontWeight: 600, padding: '5px 10px', borderRadius: 6, fontFamily: 'inherit' }}>
-                            {m.status === 'locked' ? 'Unlock' : 'Lock'}
+                          <button onClick={() => handleToggleLock(m.id)} disabled={lockingId === m.id} style={{ background: m.status === 'locked' ? 'rgba(240,170,80,0.1)' : 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', color: lockingId === m.id ? 'var(--muted-foreground)' : m.status === 'locked' ? 'oklch(0.85 0.10 80)' : 'var(--muted-foreground)', cursor: lockingId === m.id ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, padding: '5px 10px', borderRadius: 6, fontFamily: 'inherit', opacity: lockingId === m.id ? 0.5 : 1 }}>
+                            {lockingId === m.id ? 'Loading…' : m.status === 'locked' ? 'Unlock' : 'Lock'}
                           </button>
                           <button onClick={() => setDeleteConfirm(m.id)} style={{ background: 'rgba(255,0,0,0.06)', border: '1px solid rgba(255,0,0,0.15)', color: 'oklch(0.72 0.16 25)', cursor: 'pointer', fontSize: 12, fontWeight: 600, padding: '5px 10px', borderRadius: 6, fontFamily: 'inherit' }}>Delete</button>
+                          <a href={`/match/${m.id}`} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border)', color: 'var(--muted-foreground)', cursor: 'pointer', padding: '5px 8px', borderRadius: 6, textDecoration: 'none' }}>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                          </a>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -347,7 +366,7 @@ export default function AdminMatchesPage() {
       </div>
 
       {/* Add / Edit dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onOpenChange={handleDialogChange}>
         <DialogContent style={{ background: 'var(--card)', border: '1px solid var(--border)', maxWidth: 540 }}>
           <DialogHeader>
             <DialogTitle>{editId ? 'Edit match' : 'Add match'}</DialogTitle>
@@ -357,14 +376,14 @@ export default function AdminMatchesPage() {
             {/* Team selects side by side */}
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 10 }}>
               <TeamSelect
-                label="Home team"
+                label="Team 1"
                 value={form.home_team}
                 onChange={setHomeTeam}
                 exclude={form.away_team}
               />
               <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--muted-foreground)', paddingBottom: 10, flexShrink: 0 }}>vs</div>
               <TeamSelect
-                label="Away team"
+                label="Team 2"
                 value={form.away_team}
                 onChange={v => set('away_team', v)}
                 exclude={form.home_team}
@@ -405,8 +424,8 @@ export default function AdminMatchesPage() {
             )}
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 4 }}>
-              <button onClick={() => setDialogOpen(false)} style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--foreground)', cursor: 'pointer', fontSize: 14, fontWeight: 600, padding: '10px 18px', borderRadius: 'var(--radius)', fontFamily: 'inherit' }}>Cancel</button>
-              <button onClick={handleSave} style={{ background: 'var(--primary)', color: 'var(--primary-foreground)', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, padding: '10px 18px', borderRadius: 'var(--radius)', fontFamily: 'inherit' }}>Save match</button>
+              <button onClick={() => handleDialogChange(false)} style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--foreground)', cursor: 'pointer', fontSize: 14, fontWeight: 600, padding: '10px 18px', borderRadius: 'var(--radius)', fontFamily: 'inherit' }}>Cancel</button>
+              <button onClick={handleSave} disabled={saving} style={{ background: saving ? 'var(--muted)' : 'var(--primary)', color: saving ? 'var(--muted-foreground)' : 'var(--primary-foreground)', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', fontSize: 14, fontWeight: 600, padding: '10px 18px', borderRadius: 'var(--radius)', fontFamily: 'inherit' }}>{saving ? 'Saving…' : 'Save match'}</button>
             </div>
           </div>
         </DialogContent>
@@ -419,7 +438,7 @@ export default function AdminMatchesPage() {
           <p style={{ fontSize: 14, color: 'var(--muted-foreground)', marginTop: 8 }}>This action cannot be undone. All predictions for this match will also be deleted.</p>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 16 }}>
             <button onClick={() => setDeleteConfirm(null)} style={{ background: 'transparent', border: '1px solid var(--border)', color: 'var(--foreground)', cursor: 'pointer', fontSize: 14, fontWeight: 600, padding: '10px 18px', borderRadius: 'var(--radius)', fontFamily: 'inherit' }}>Cancel</button>
-            <button onClick={() => deleteConfirm && handleDelete(deleteConfirm)} style={{ background: 'oklch(0.5181 0.1747 25.761)', color: 'white', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 600, padding: '10px 18px', borderRadius: 'var(--radius)', fontFamily: 'inherit' }}>Delete</button>
+            <button onClick={() => deleteConfirm && handleDelete(deleteConfirm)} disabled={!!deletingId} style={{ background: 'oklch(0.5181 0.1747 25.761)', color: 'white', border: 'none', cursor: deletingId ? 'not-allowed' : 'pointer', fontSize: 14, fontWeight: 600, padding: '10px 18px', borderRadius: 'var(--radius)', fontFamily: 'inherit', opacity: deletingId ? 0.6 : 1 }}>{deletingId ? 'Deleting…' : 'Delete'}</button>
           </div>
         </DialogContent>
       </Dialog>
