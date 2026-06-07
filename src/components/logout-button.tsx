@@ -16,7 +16,7 @@ export function LogoutButton() {
     <button
       onClick={handleLogout}
       style={{
-        display: 'flex', alignItems: 'center', gap: 9,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9,
         width: '100%', padding: '14px 18px',
         background: 'rgba(255,255,255,0.03)',
         border: '1px solid var(--border)',

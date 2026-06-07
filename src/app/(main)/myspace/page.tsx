@@ -213,7 +213,7 @@ export default async function MySpacePage() {
           )}
         </>
       )}
-      <div className="md:hidden" style={{ paddingTop: 4, paddingBottom: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div className="flex flex-col gap-2 md:hidden" style={{ paddingTop: 4, paddingBottom: 8 }}>
         <HowItWorksButton />
         <LogoutButton />
       </div>
