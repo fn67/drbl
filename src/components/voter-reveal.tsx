@@ -127,7 +127,7 @@ const VoterColumn = ({
     display: 'flex', flexDirection: 'column', gap: 10,
     position: 'relative',
     boxShadow: isWinner
-      ? '0 0 0 1px rgba(98, 200, 150, 0.15) inset, 0 12px 32px -10px rgba(98, 200, 150, 0.25)'
+      ? 'none'
       : '0 1px 0 rgba(255,255,255,0.04) inset, 0 8px 24px -12px rgba(0,0,0,0.4)',
   }}>
     {isWinner && (
@@ -137,7 +137,6 @@ const VoterColumn = ({
         fontSize: 10.5, fontWeight: 700, letterSpacing: 0.6,
         textTransform: 'uppercase',
         padding: '3px 9px', borderRadius: 999,
-        boxShadow: '0 4px 12px -2px rgba(98, 200, 150, 0.6)',
       }}>Correct</div>
     )}
     <div>

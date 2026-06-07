@@ -232,14 +232,22 @@ export function MatchCard({ match, userPrediction, voteCounts }: MatchCardProps)
             </span>
             {userPrediction.points_earned > 0 ? (
               <>
-                <span style={{ color: 'oklch(0.78 0.13 164)', fontWeight: 700 }}>✓</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                     stroke="oklch(0.72 0.115 164)" strokeWidth="2.5"
+                     strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
                 <span style={{ color: 'oklch(0.78 0.13 164)', fontWeight: 700 }}>
                   +{userPrediction.points_earned} pts
                 </span>
               </>
             ) : (
               <>
-                <span style={{ color: 'oklch(0.72 0.16 25)', fontWeight: 700 }}>✗</span>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                     stroke="oklch(0.62 0.18 25)" strokeWidth="2.5"
+                     strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
                 <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}>0 pts</span>
               </>
             )}
