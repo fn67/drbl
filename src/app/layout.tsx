@@ -16,7 +16,10 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "DRBL",
+  title: {
+    default: 'DRBL | Match',
+    template: '%s',
+  },
   description: "FIFA World Cup 2026 Office Prediction Game",
 };
 

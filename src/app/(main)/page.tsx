@@ -1,4 +1,7 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase-server'
+
+export const metadata: Metadata = { title: 'DRBL | Matches' }
 import { getUser } from '@/lib/auth'
 import { computeStatus } from '@/lib/utils'
 import { MatchTimeline } from '@/components/match-timeline'

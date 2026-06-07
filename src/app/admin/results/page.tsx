@@ -17,6 +17,8 @@ export default function AdminResultsPage() {
   const [overriding, setOverriding] = useState<string | null>(null)
   const [approvingId, setApprovingId] = useState<string | null>(null)
 
+  useEffect(() => { document.title = 'DRBL | Admin' }, [])
+
   useEffect(() => {
     fetch('/api/matches')
       .then(r => r.json())

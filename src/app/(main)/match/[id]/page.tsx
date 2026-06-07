@@ -1,8 +1,12 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
 import { getUser } from '@/lib/auth'
 import { computeStatus, getAvatarColor, getInitials, getMatchWinner, formatIST } from '@/lib/utils'
+import { PageTitle } from '@/components/page-title'
+
+export const metadata: Metadata = { title: 'DRBL | Match' }
 import { VoteForm } from '@/components/vote-form'
 import { VoterReveal } from '@/components/voter-reveal'
 import { Flag } from '@/components/flag'
@@ -79,6 +83,7 @@ export default async function MatchDetailPage({ params }: PageProps) {
   return (
     <>
       <Toaster />
+      <PageTitle title={`DRBL | ${match.home_team} vs ${match.away_team}`} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
         <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--muted-foreground)', textDecoration: 'none' }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

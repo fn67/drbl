@@ -1,9 +1,11 @@
 'use client'
 
+import { useEffect } from 'react'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase'
 
 export default function LoginPage() {
+  useEffect(() => { document.title = 'DRBL | Sign in' }, [])
   const handleSignIn = async () => {
     const supabase = createClient()
     await supabase.auth.signInWithOAuth({

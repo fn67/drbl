@@ -166,6 +166,8 @@ export default function AdminMatchesPage() {
 
   const isGroupStage = form.round === 'Group Stage'
 
+  useEffect(() => { document.title = 'DRBL | Admin' }, [])
+
   useEffect(() => {
     fetch('/api/matches')
       .then(r => r.json())

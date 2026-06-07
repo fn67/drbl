@@ -1,4 +1,7 @@
+import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase-server'
+
+export const metadata: Metadata = { title: 'DRBL | Leaderboard' }
 import { getUser } from '@/lib/auth'
 import { LeaderboardClient } from '@/components/leaderboard-client'
 

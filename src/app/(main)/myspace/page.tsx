@@ -1,4 +1,7 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
+
+export const metadata: Metadata = { title: 'DRBL | My Space' }
 import { createClient } from '@/lib/supabase-server'
 import { getUser } from '@/lib/auth'
 import { computeStatus, getInitials, formatIST } from '@/lib/utils'
