@@ -41,7 +41,7 @@ interface VoterRevealProps {
   round: string
 }
 
-const VoterRow = ({ voter, completed }: { voter: Voter; completed: boolean }) => {
+const VoterRow = ({ voter, completed, isDraw = false }: { voter: Voter; completed: boolean; isDraw?: boolean }) => {
   const correct = completed && voter.correct === true
   const wrong = completed && voter.correct === false
   return (
@@ -70,7 +70,7 @@ const VoterRow = ({ voter, completed }: { voter: Voter; completed: boolean }) =>
           fontSize: 11.5, fontWeight: 600, color: 'var(--muted-foreground)',
           marginTop: 1, display: 'flex', alignItems: 'center', gap: 4,
         }}>
-          {voter.diff !== null && voter.diff !== undefined ? `+${voter.diff}` : 'Draw'}
+          {voter.diff !== null && voter.diff !== undefined ? `+${voter.diff}` : isDraw ? 'Draw' : null}
           {voter.bonus && (
             <span style={{
               padding: '1px 5px', borderRadius: 4,
@@ -109,10 +109,10 @@ const VoterRow = ({ voter, completed }: { voter: Voter; completed: boolean }) =>
 }
 
 const VoterColumn = ({
-  header, sub, voters, completed, isWinner,
+  header, sub, voters, completed, isWinner, isDraw = false,
 }: {
   header: React.ReactNode; sub: string; voters: Voter[];
-  completed: boolean; isWinner: boolean;
+  completed: boolean; isWinner: boolean; isDraw?: boolean;
 }) => (
   <div style={{
     flex: 1, minWidth: 0,
@@ -164,7 +164,7 @@ const VoterColumn = ({
           border: '1px dashed var(--border)', borderRadius: 'calc(var(--radius) - 6px)',
         }}>No voters</div>
       ) : voters.map((v, i) => (
-        <VoterRow key={i} voter={v} completed={completed} />
+        <VoterRow key={i} voter={v} completed={completed} isDraw={isDraw} />
       ))}
     </div>
   </div>
@@ -242,6 +242,7 @@ export function VoterReveal({
             voters={votersDraw}
             completed={completed}
             isWinner={completed && winner === 'draw'}
+            isDraw={true}
           />
         )}
         <VoterColumn

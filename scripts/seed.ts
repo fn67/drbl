@@ -308,73 +308,73 @@ type PredRow = [number, number, 'home' | 'draw' | 'away', number | null]
 const SEED_PREDICTIONS: PredRow[] = [
   // ── M0: Brazil 2-1 Morocco ────────────────────────────────────────────────
   [0, 0, 'home', 1], [1, 0, 'home', 1], [2, 0, 'home', 2], [3, 0, 'home', 2],
-  [4, 0, 'away', null], [5, 0, 'home', 1], [6, 0, 'away', null],
-  [7, 0, 'home', 3], [8, 0, 'home', 2], [9, 0, 'away', null],
+  [4, 0, 'away', 2], [5, 0, 'home', 1], [6, 0, 'away', 1],
+  [7, 0, 'home', 3], [8, 0, 'home', 2], [9, 0, 'away', 3],
 
   // ── M1: Germany 1-1 Colombia ──────────────────────────────────────────────
   [0, 1, 'draw', null], [1, 1, 'draw', null], [2, 1, 'home', 1], [3, 1, 'draw', null],
-  [4, 1, 'draw', null], [5, 1, 'away', null], [6, 1, 'home', 1],
-  [7, 1, 'away', null], [8, 1, 'home', 2],    [9, 1, 'home', 1],
+  [4, 1, 'draw', null], [5, 1, 'away', 1], [6, 1, 'home', 1],
+  [7, 1, 'away', 2], [8, 1, 'home', 2],    [9, 1, 'home', 1],
 
   // ── M2: France 3-0 Nigeria ────────────────────────────────────────────────
-  [0, 2, 'home', 3], [1, 2, 'home', 2], [2, 2, 'home', 3], [3, 2, 'away', null],
+  [0, 2, 'home', 3], [1, 2, 'home', 2], [2, 2, 'home', 3], [3, 2, 'away', 2],
   [4, 2, 'home', 1], [5, 2, 'home', 1], [6, 2, 'draw', null],
-  [7, 2, 'away', null], [8, 2, 'away', null], [9, 2, 'away', null],
+  [7, 2, 'away', 1], [8, 2, 'away', 2], [9, 2, 'away', 1],
 
   // ── M3: Spain 2-0 Australia ───────────────────────────────────────────────
   [0, 3, 'home', 2], [1, 3, 'home', 1], [2, 3, 'home', 2], [3, 3, 'home', 2],
   [4, 3, 'home', 1], [5, 3, 'draw', null], [6, 3, 'home', 2],
-  [7, 3, 'draw', null], [8, 3, 'away', null], [9, 3, 'home', 1],
+  [7, 3, 'draw', null], [8, 3, 'away', 1], [9, 3, 'home', 1],
 
   // ── M4: England vs Japan (locked) ────────────────────────────────────────
   [0, 4, 'home', 1], [1, 4, 'home', 2], [2, 4, 'home', 1], [3, 4, 'draw', null],
-  [4, 4, 'home', 1], [5, 4, 'away', null], [6, 4, 'home', 2],
+  [4, 4, 'home', 1], [5, 4, 'away', 1], [6, 4, 'home', 2],
   [7, 4, 'draw', null], [8, 4, 'home', 1], [9, 4, 'home', 3],
 
   // ── M5: Portugal vs Tunisia (locked) ─────────────────────────────────────
   [0, 5, 'home', 2], [1, 5, 'home', 1], [2, 5, 'home', 2], [3, 5, 'home', 1],
-  [4, 5, 'draw', null], [5, 5, 'home', 1], [6, 5, 'away', null],
+  [4, 5, 'draw', null], [5, 5, 'home', 1], [6, 5, 'away', 2],
   [7, 5, 'home', 2], [8, 5, 'home', 1], [9, 5, 'draw', null],
 
   // ── M6: Netherlands vs Jordan (locked) — Sophie missing ──────────────────
   [0, 6, 'home', 3], [1, 6, 'home', 2], [2, 6, 'home', 3], [3, 6, 'home', 2],
   [4, 6, 'home', 1], [5, 6, 'home', 2], [6, 6, 'draw', null],
-  [7, 6, 'home', 1], [8, 6, 'away', null],
+  [7, 6, 'home', 1], [8, 6, 'away', 2],
 
   // ── M7: Belgium vs Qatar (locked) — David + Sophie missing ───────────────
   [0, 7, 'home', 2], [1, 7, 'home', 1], [2, 7, 'home', 2], [3, 7, 'draw', null],
-  [4, 7, 'home', 1], [5, 7, 'home', 2], [6, 7, 'away', null], [7, 7, 'home', 1],
+  [4, 7, 'home', 1], [5, 7, 'home', 2], [6, 7, 'away', 1], [7, 7, 'home', 1],
 
   // ── M8: USA vs New Zealand (voting_open) ─────────────────────────────────
   [0, 8, 'home', 2], [1, 8, 'home', 1], [2, 8, 'home', 2], [3, 8, 'draw', null],
-  [4, 8, 'home', 1], [5, 8, 'home', 1], [6, 8, 'away', null],
+  [4, 8, 'home', 1], [5, 8, 'home', 1], [6, 8, 'away', 2],
   [7, 8, 'home', 2], [8, 8, 'home', 1],
 
   // ── M9: Mexico vs Saudi Arabia (voting_open) ─────────────────────────────
-  [0, 9, 'home', 1], [1, 9, 'home', 2], [2, 9, 'away', null], [3, 9, 'home', 1],
+  [0, 9, 'home', 1], [1, 9, 'home', 2], [2, 9, 'away', 1], [3, 9, 'home', 1],
   [4, 9, 'draw', null], [5, 9, 'home', 1], [6, 9, 'home', 2], [7, 9, 'draw', null],
 
   // ── M10: Canada vs Ivory Coast (voting_open) ──────────────────────────────
-  [0, 10, 'home', 1], [1, 10, 'away', null], [2, 10, 'home', 2],
-  [3, 10, 'draw', null], [4, 10, 'home', 1], [5, 10, 'away', null], [6, 10, 'home', 1],
+  [0, 10, 'home', 1], [1, 10, 'away', 2], [2, 10, 'home', 2],
+  [3, 10, 'draw', null], [4, 10, 'home', 1], [5, 10, 'away', 1], [6, 10, 'home', 1],
 
   // ── M11: Argentina vs South Korea (voting_open) ───────────────────────────
   [0, 11, 'home', 2], [1, 11, 'home', 1], [2, 11, 'home', 2], [3, 11, 'home', 1],
-  [4, 11, 'draw', null], [5, 11, 'home', 1], [6, 11, 'away', null],
+  [4, 11, 'draw', null], [5, 11, 'home', 1], [6, 11, 'away', 2],
 
   // ── M12: Egypt vs Ecuador (voting_open) ───────────────────────────────────
   [0, 12, 'draw', null], [1, 12, 'home', 1], [2, 12, 'away', null],
   [3, 12, 'home', 2], [4, 12, 'draw', null],
 
   // ── M13: Uruguay vs South Africa (voting_open) ────────────────────────────
-  [0, 13, 'home', 2], [1, 13, 'home', 1], [2, 13, 'home', 1], [3, 13, 'away', null],
+  [0, 13, 'home', 2], [1, 13, 'home', 1], [2, 13, 'home', 1], [3, 13, 'away', 1],
 
   // ── Upcoming: sparse ─────────────────────────────────────────────────────
   [0, 14, 'home', 1], [1, 14, 'home', 2],
-  [0, 15, 'home', 2], [1, 15, 'home', 1], [2, 15, 'away', null],
+  [0, 15, 'home', 2], [1, 15, 'home', 1], [2, 15, 'away', 2],
   [0, 16, 'home', 2],
   [0, 17, 'home', 1], [1, 17, 'draw', null],
-  [0, 18, 'home', 1], [1, 18, 'away', null],
+  [0, 18, 'home', 1], [1, 18, 'away', 1],
   [0, 19, 'home', 2],
 ]
 
@@ -393,7 +393,7 @@ type Outcome = 'exact' | 'correct' | 'wrong' | 'skip'
 const OUTCOME_PRED: Record<Exclude<Outcome, 'skip'>, Record<0|1|2|3, ['home'|'draw'|'away', number|null]>> = {
   exact:   { 0: ['home', 1], 1: ['draw', null], 2: ['home', 3], 3: ['home', 2] },
   correct: { 0: ['home', 2], 1: ['draw', null], 2: ['home', 1], 3: ['home', 1] },
-  wrong:   { 0: ['away', null], 1: ['home', 1], 2: ['away', null], 3: ['draw', null] },
+  wrong:   { 0: ['away', 2], 1: ['home', 1], 2: ['away', 1], 3: ['draw', null] },
 }
 
 // [m0, m1, m2, m3, userCount]  — sequential, matches EXTRA_USERS order
