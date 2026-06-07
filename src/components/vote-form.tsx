@@ -23,15 +23,19 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
     existingPrediction?.goal_difference ?? null
   )
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submittedPick, setSubmittedPick] = useState<PredictedWinner | null>(
+    existingPrediction?.predicted_winner ?? null
+  )
+  const [submittedDiff, setSubmittedDiff] = useState<number | null>(
+    existingPrediction?.goal_difference ?? null
+  )
 
   const isKnockout = KNOCKOUT_ROUNDS.includes(match.round)
   const isTeam = pick === 'home' || pick === 'away'
 
-  const originalPick = existingPrediction?.predicted_winner ?? null
-  const originalDiff = existingPrediction?.goal_difference ?? null
   const selectionComplete = pick !== null && (pick === 'draw' || diff !== null)
   const effectiveDiff = pick === 'draw' ? null : diff
-  const hasChanged = !existingPrediction || pick !== originalPick || effectiveDiff !== originalDiff
+  const hasChanged = submittedPick === null || pick !== submittedPick || effectiveDiff !== submittedDiff
   const canSubmit = selectionComplete && hasChanged
 
   const formatPick = (winner: PredictedWinner | null, goalDiff: number | null): string | null => {
@@ -41,9 +45,9 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
     return goalDiff !== null ? `${team} +${goalDiff}` : team
   }
 
-  const savedLabel = existingPrediction ? formatPick(originalPick, originalDiff) : null
+  const savedLabel = submittedPick !== null ? formatPick(submittedPick, submittedDiff) : null
   const currentLabel = selectionComplete ? formatPick(pick, pick === 'draw' ? null : diff) : null
-  const showArrow = !!existingPrediction && hasChanged && !!currentLabel
+  const showArrow = submittedPick !== null && hasChanged && !!currentLabel
 
   const handleSubmit = async () => {
     if (!canSubmit || isSubmitting) return
@@ -59,6 +63,9 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
         toast.error(error ?? 'Failed to submit prediction')
         return
       }
+      // update local submitted state so hasChanged immediately becomes false
+      setSubmittedPick(pick)
+      setSubmittedDiff(effectiveDiff)
       toast.success(existingPrediction ? 'Prediction updated!' : 'Prediction confirmed!')
       router.refresh()
     } catch {
