@@ -192,7 +192,19 @@ export default async function MySpacePage() {
                       <div style={{ fontSize: 13.5, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: correct ? 'oklch(0.80 0.13 164)' : 'var(--muted-foreground)', whiteSpace: 'nowrap' }}>
                         {correct ? `+${p.points_earned}` : '0'} pts
                       </div>
-                      <span style={{ fontSize: 17, lineHeight: 1 }}>{correct ? '✅' : '❌'}</span>
+                      {correct ? (
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                             stroke="oklch(0.72 0.115 164)" strokeWidth="2.5"
+                             strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                          <path d="M20 6L9 17l-5-5"/>
+                        </svg>
+                      ) : (
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                             stroke="oklch(0.62 0.18 25)" strokeWidth="2.5"
+                             strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                          <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                      )}
                     </div>
                   )
                 })}
