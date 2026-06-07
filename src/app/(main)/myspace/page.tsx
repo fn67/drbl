@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Star } from 'lucide-react'
 
 export const metadata: Metadata = { title: 'DRBL | My Space' }
 import { createClient } from '@/lib/supabase-server'
@@ -185,9 +186,7 @@ export default async function MySpacePage() {
                           <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--foreground)' }}>{m.away_team}</span>
                           {m.is_featured && (
                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(240,170,80,0.16)', color: 'oklch(0.85 0.10 80)', fontSize: 10.5, fontWeight: 700, padding: '2px 7px', borderRadius: 999, letterSpacing: 0.3 }}>
-                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <polygon points="6 3 18 3 22 9 12 22 2 9"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>
-                              </svg>
+                              <Star size={11} strokeWidth={2} />
                               2x pts
                             </span>
                           )}

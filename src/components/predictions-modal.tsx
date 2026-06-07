@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Star } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { LeaderboardEntry } from '@/types'
 
@@ -111,9 +112,7 @@ export function PredictionsModal({ user, open, onClose }: PredictionsModalProps)
                       <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--foreground)' }}>{p.match}</span>
                       {p.featured && (
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(240,170,80,0.18)', color: 'oklch(0.85 0.10 80)', fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 999, letterSpacing: 0.3, flexShrink: 0 }}>
-                          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polygon points="6 3 18 3 22 9 12 22 2 9"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>
-                          </svg>
+                          <Star size={10} strokeWidth={2} />
                           2x
                         </span>
                       )}

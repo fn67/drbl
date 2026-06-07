@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
 import { getUser } from '@/lib/auth'
 import { computeStatus, getAvatarColor, getInitials, getMatchWinner, formatIST } from '@/lib/utils'
+import { Star } from 'lucide-react'
 import { PageTitle } from '@/components/page-title'
 
 export const metadata: Metadata = { title: 'DRBL | Match' }
@@ -140,9 +141,7 @@ export default async function MatchDetailPage({ params }: PageProps) {
 
           {match.is_featured && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'rgba(240,170,80,0.12)', border: '1px solid rgba(240,170,80,0.28)', borderRadius: 'calc(var(--radius) - 4px)', padding: '11px 16px', fontSize: 13, fontWeight: 700, color: 'oklch(0.88 0.12 80)' }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                <polygon points="6 3 18 3 22 9 12 22 2 9"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>
-              </svg>
+              <Star size={15} strokeWidth={2} style={{ flexShrink: 0 }} />
               Featured match — Double points!
             </div>
           )}

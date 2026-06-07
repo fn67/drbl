@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { Star } from 'lucide-react'
 import { Match } from '@/types'
 import { TEAMS, GROUPS } from '@/lib/teams'
 import { Flag } from '@/components/flag'
@@ -335,7 +336,7 @@ export default function AdminMatchesPage() {
                   const kickoff = new Date(m.kickoff_at)
                   return (
                     <TableRow key={m.id}>
-                      <TableCell><div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}><Flag code={TEAMS.find(t => t.name === m.home_team)?.code ?? 'un'} size={18} />{m.home_team} vs <Flag code={TEAMS.find(t => t.name === m.away_team)?.code ?? 'un'} size={18} />{m.away_team}{m.is_featured && (<span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(240,170,80,0.16)', color: 'oklch(0.85 0.10 80)', fontSize: 10.5, fontWeight: 700, padding: '2px 6px', borderRadius: 999 }}><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="6 3 18 3 22 9 12 22 2 9"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg>2x</span>)}</div></TableCell>
+                      <TableCell><div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}><Flag code={TEAMS.find(t => t.name === m.home_team)?.code ?? 'un'} size={18} />{m.home_team} vs <Flag code={TEAMS.find(t => t.name === m.away_team)?.code ?? 'un'} size={18} />{m.away_team}{m.is_featured && (<span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(240,170,80,0.16)', color: 'oklch(0.85 0.10 80)', fontSize: 10.5, fontWeight: 700, padding: '2px 6px', borderRadius: 999 }}><Star size={10} strokeWidth={2} />2x</span>)}</div></TableCell>
                       <TableCell style={{ fontSize: 13, color: 'var(--muted-foreground)' }}>
                         {kickoff.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}{' '}
                         {formatIST(m.kickoff_at)}
@@ -438,9 +439,7 @@ export default function AdminMatchesPage() {
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--background)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
                 )}
               </div>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="oklch(0.85 0.10 80)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                <polygon points="6 3 18 3 22 9 12 22 2 9"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/>
-              </svg>
+              <Star size={14} strokeWidth={2} color="oklch(0.85 0.10 80)" style={{ flexShrink: 0 }} />
               <span style={{ fontSize: 13.5, fontWeight: 600, color: form.is_featured ? 'oklch(0.88 0.10 80)' : 'var(--foreground)' }}>Featured match (2× points)</span>
             </div>
 
