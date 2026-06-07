@@ -160,7 +160,7 @@ export default async function MySpacePage() {
             <div>
               <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--foreground)', marginBottom: 14 }}>Prediction history</div>
               <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '0 18px' }}>
-                {completedPredictions.map((p: { id: string; match_id: string; predicted_winner: string; goal_difference: number | null; points_earned: number; matches: { home_team: string; away_team: string; home_flag: string; away_flag: string; home_score: number | null; away_score: number | null } | null }, i: number) => {
+                {completedPredictions.map((p: { id: string; match_id: string; predicted_winner: string; goal_difference: number | null; points_earned: number; matches: { home_team: string; away_team: string; home_flag: string; away_flag: string; home_score: number | null; away_score: number | null; winner_override: 'home' | 'away' | null } | null }, i: number) => {
                   const m = p.matches
                   if (!m) return null
                   const correct = p.points_earned > 0
@@ -185,7 +185,7 @@ export default async function MySpacePage() {
                           <span style={{ opacity: 0.4, margin: '0 7px' }}>·</span>
                           Result{' '}
                           <span style={{ color: 'var(--foreground)', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>
-                            {m.home_score} – {m.away_score}
+                            {m.home_score} – {m.away_score}{m.winner_override ? ` (${m.winner_override === 'home' ? m.home_team : m.away_team} - pens)` : ''}
                           </span>
                         </div>
                       </div>

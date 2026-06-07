@@ -40,11 +40,11 @@ export function PredictionsModal({ user, open, onClose }: PredictionsModalProps)
     setLoading(true)
     fetch(`/api/predictions?userId=${user.user_id}`)
       .then(r => r.json())
-      .then((data: { matches: { home_team: string; away_team: string; home_score: number | null; away_score: number | null }; predicted_winner: string; goal_difference: number | null; points_earned: number }[]) => {
+      .then((data: { matches: { home_team: string; away_team: string; home_score: number | null; away_score: number | null; winner_override: 'home' | 'away' | null }; predicted_winner: string; goal_difference: number | null; points_earned: number }[]) => {
         const rows: PredictionRow[] = (data ?? [])
           .filter((p) => p.matches && (p.matches as { home_score: number | null }).home_score !== null)
           .map((p) => {
-            const m = p.matches as { home_team: string; away_team: string; home_score: number | null; away_score: number | null }
+            const m = p.matches as { home_team: string; away_team: string; home_score: number | null; away_score: number | null; winner_override: 'home' | 'away' | null }
             const predLabel =
               p.predicted_winner === 'draw'
                 ? 'Draw'
@@ -54,7 +54,7 @@ export function PredictionsModal({ user, open, onClose }: PredictionsModalProps)
             return {
               match: `${m.home_team} vs ${m.away_team}`,
               prediction: predLabel,
-              result: `${m.home_score} – ${m.away_score}`,
+              result: `${m.home_score} – ${m.away_score}${m.winner_override ? ` (${m.winner_override === 'home' ? m.home_team : m.away_team} - pens)` : ''}`,
               pts: p.points_earned,
               correct: p.points_earned > 0,
             }
