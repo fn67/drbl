@@ -52,6 +52,7 @@ const SECTIONS = [
     title: 'Knockout matches',
     lines: [
       'Draw option is not available for knockout matches.',
+      'If a knockout match ends level after extra time, the match is decided on penalties. The team that wins on penalties is the winner — no bonus points for goal difference in penalty matches.',
     ],
   },
   {
