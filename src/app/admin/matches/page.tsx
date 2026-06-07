@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Match } from '@/types'
 import { TEAMS, GROUPS } from '@/lib/teams'
 import { Flag } from '@/components/flag'
-import { computeStatus } from '@/lib/utils'
+import { computeStatus, formatIST } from '@/lib/utils'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
@@ -174,10 +174,11 @@ export default function AdminMatchesPage() {
   const handleOpen = (match?: Match) => {
     if (match) {
       const dt = new Date(match.kickoff_at)
+      const istDt = new Date(dt.getTime() + 330 * 60000)
       setForm({
         home_team: match.home_team, away_team: match.away_team,
-        kickoff_date: dt.toISOString().split('T')[0],
-        kickoff_time: dt.toISOString().split('T')[1].slice(0, 5),
+        kickoff_date: istDt.toISOString().split('T')[0],
+        kickoff_time: istDt.toISOString().split('T')[1].slice(0, 5),
         round: match.round, group_name: match.group_name,
       })
       setEditId(match.id)
@@ -221,7 +222,7 @@ export default function AdminMatchesPage() {
 
     const homeData = TEAMS.find(t => t.name === home_team)!
     const awayData = TEAMS.find(t => t.name === away_team)!
-    const kickoff_at = `${kickoff_date}T${kickoff_time}:00Z`
+    const kickoff_at = new Date(new Date(`${kickoff_date}T${kickoff_time}:00Z`).getTime() - 330 * 60000).toISOString()
     const payload = {
       home_team, away_team,
       home_flag: homeData.code, away_flag: awayData.code,
@@ -315,8 +316,8 @@ export default function AdminMatchesPage() {
                     <TableRow key={m.id}>
                       <TableCell><div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}><Flag code={TEAMS.find(t => t.name === m.home_team)?.code ?? 'un'} size={18} />{m.home_team} vs <Flag code={TEAMS.find(t => t.name === m.away_team)?.code ?? 'un'} size={18} />{m.away_team}</div></TableCell>
                       <TableCell style={{ fontSize: 13, color: 'var(--muted-foreground)' }}>
-                        {kickoff.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })}{' '}
-                        {kickoff.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })}
+                        {kickoff.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}{' '}
+                        {formatIST(m.kickoff_at)}
                       </TableCell>
                       <TableCell style={{ fontSize: 13 }}>{m.group_name ? `${m.group_name} · ` : ''}{m.round}</TableCell>
                       <TableCell>
@@ -374,7 +375,7 @@ export default function AdminMatchesPage() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               {[
                 { key: 'kickoff_date', label: 'Kickoff date', type: 'date' },
-                { key: 'kickoff_time', label: 'Kickoff time (UTC)', type: 'time' },
+                { key: 'kickoff_time', label: 'Kickoff time (IST)', type: 'time' },
               ].map(({ key, label, type }) => (
                 <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <label style={{ fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)' }}>{label}</label>

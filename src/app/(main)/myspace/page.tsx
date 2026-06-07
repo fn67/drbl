@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
 import { getUser } from '@/lib/auth'
-import { computeStatus, getInitials } from '@/lib/utils'
+import { computeStatus, getInitials, formatIST } from '@/lib/utils'
 import { PendingVotes } from '@/components/pending-votes'
 import { LogoutButton } from '@/components/logout-button'
 import { HowItWorksButton } from '@/components/how-it-works-button'
@@ -119,8 +119,6 @@ export default async function MySpacePage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {activeMatches.map(m => {
                   const pred = (predictions ?? []).find((p: { match_id: string }) => p.match_id === m.id)
-                  const kickoff = new Date(m.kickoff_at)
-                  const hoursUntil = Math.max(0, Math.ceil((kickoff.getTime() - Date.now()) / 3600000))
                   return (
                     <div key={m.id} style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '14px 18px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }}>
                       {/* Row 1: teams */}
@@ -141,7 +139,7 @@ export default async function MySpacePage() {
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11.5, fontWeight: 600, color: 'var(--muted-foreground)' }}>
                           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-                          Locks in {hoursUntil}h
+                          Locks at {formatIST(m.kickoff_at)}
                         </div>
                         <Link href={`/match/${m.id}`} style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 10px', borderRadius: 999, border: '1px solid var(--border)', background: 'rgba(255,255,255,0.03)', color: 'var(--foreground)', textDecoration: 'none', fontSize: 11.5, fontWeight: 600 }}>
                           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/></svg>

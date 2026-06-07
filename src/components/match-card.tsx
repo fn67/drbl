@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Match, Prediction } from '@/types'
 import { Flag } from '@/components/flag'
 import { getTeamCode } from '@/lib/teams'
-import { getMatchWinner } from '@/lib/utils'
+import { getMatchWinner, formatIST } from '@/lib/utils'
 
 const KNOCKOUT_ROUNDS = ['Round of 16', 'Quarter Final', 'Semi Final', 'Final']
 
@@ -69,8 +69,7 @@ const VoteBar = ({ homeP, drawP, awayP, homeTeam, awayTeam, isKnockout = false }
 )
 
 export function MatchCard({ match, userPrediction, voteCounts }: MatchCardProps) {
-  const kickoffDate = new Date(match.kickoff_at)
-  const timeStr = kickoffDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })
+  const timeStr = formatIST(match.kickoff_at)
 
   const hoursUntilVoting = Math.max(0, Math.ceil((new Date(match.kickoff_at).getTime() - 48 * 3600000 - Date.now()) / 3600000))
 

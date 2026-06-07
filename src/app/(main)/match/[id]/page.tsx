@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
 import { getUser } from '@/lib/auth'
-import { computeStatus, getAvatarColor, getInitials, getMatchWinner } from '@/lib/utils'
+import { computeStatus, getAvatarColor, getInitials, getMatchWinner, formatIST } from '@/lib/utils'
 import { VoteForm } from '@/components/vote-form'
 import { VoterReveal } from '@/components/voter-reveal'
 import { Flag } from '@/components/flag'
@@ -53,8 +53,8 @@ export default async function MatchDetailPage({ params }: PageProps) {
   }
 
   const kickoffDate = new Date(match.kickoff_at)
-  const dateStr = kickoffDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
-  const timeStr = kickoffDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'UTC' })
+  const dateStr = kickoffDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' })
+  const timeStr = formatIST(match.kickoff_at)
 
   const statusConfigMap: Record<string, { tone: string; label: string }> = {
     upcoming:    { tone: 'blue',  label: 'Upcoming' },
@@ -130,7 +130,7 @@ export default async function MatchDetailPage({ params }: PageProps) {
           <div style={{ display: 'flex', justifyContent: 'center', gap: 12, fontSize: 13, fontWeight: 600, color: 'var(--muted-foreground)' }}>
             <span>{dateStr}</span>
             <span style={{ opacity: 0.4 }}>·</span>
-            <span>{timeStr} UTC</span>
+            <span>{timeStr}</span>
           </div>
         </div>
 
