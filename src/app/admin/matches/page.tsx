@@ -25,7 +25,7 @@ const STATUS_BADGE = {
   completed:   { bg: 'rgba(255,255,255,0.06)', fg: 'rgba(255,255,255,0.62)', label: 'Completed' },
 }
 
-const ROUNDS = ['Group Stage', 'Round of 16', 'Quarter Final', 'Semi Final', 'Final']
+const ROUNDS = ['Group Stage', 'Round of 32', 'Round of 16', 'Quarter Final', 'Semi Final', 'Third Place Play-off', 'Final']
 
 const emptyForm = {
   home_team: '', away_team: '',

@@ -26,7 +26,7 @@ interface Voter {
   bonus?: number
 }
 
-const KNOCKOUT_ROUNDS = ['Round of 16', 'Quarter Final', 'Semi Final', 'Final']
+const KNOCKOUT_ROUNDS = ['Round of 32', 'Round of 16', 'Quarter Final', 'Semi Final', 'Third Place Play-off', 'Final']
 
 interface VoterRevealProps {
   homeTeam: string

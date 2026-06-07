@@ -6,7 +6,7 @@ import { Flag } from '@/components/flag'
 import { getTeamCode } from '@/lib/teams'
 import { getMatchWinner, formatIST } from '@/lib/utils'
 
-const KNOCKOUT_ROUNDS = ['Round of 16', 'Quarter Final', 'Semi Final', 'Final']
+const KNOCKOUT_ROUNDS = ['Round of 32', 'Round of 16', 'Quarter Final', 'Semi Final', 'Third Place Play-off', 'Final']
 
 interface MatchCardProps {
   match: Match

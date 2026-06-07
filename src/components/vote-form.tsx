@@ -7,7 +7,7 @@ import { getTeamCode } from '@/lib/teams'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 
-const KNOCKOUT_ROUNDS = ['Round of 16', 'Quarter Final', 'Semi Final', 'Final']
+const KNOCKOUT_ROUNDS = ['Round of 32', 'Round of 16', 'Quarter Final', 'Semi Final', 'Third Place Play-off', 'Final']
 
 interface VoteFormProps {
   match: Match
