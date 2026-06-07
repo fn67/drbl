@@ -44,7 +44,6 @@ export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail, 
     { label: 'Matches', href: '/' },
     { label: 'Leaderboard', href: '/leaderboard' },
     { label: 'My Space', href: '/myspace' },
-    ...(isAdmin ? [{ label: 'Admin', href: '/admin/matches' }] : []),
   ]
 
   const isActive = (href: string) => {
@@ -170,6 +169,30 @@ export function Navbar({ points = 75, userInitials = 'RM', userName, userEmail, 
                   )}
                 </div>
                 <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '0 6px' }} />
+                {isAdmin && (
+                  <Link
+                    href="/admin/matches"
+                    onClick={() => setOpen(false)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 9,
+                      width: '100%', marginTop: 6,
+                      padding: '9px 12px', borderRadius: 9,
+                      background: 'transparent', border: 'none',
+                      color: 'var(--foreground)', cursor: 'pointer',
+                      fontFamily: 'inherit', fontWeight: 600, fontSize: 13.5,
+                      textDecoration: 'none',
+                      transition: 'background .12s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4Z"/>
+                    </svg>
+                    Admin panel
+                  </Link>
+                )}
                 <button
                   onClick={() => { setOpen(false); setHelpOpen(true) }}
                   style={{
