@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Star } from 'lucide-react'
 import { Match, Prediction, PredictedWinner } from '@/types'
 import { Flag } from '@/components/flag'
 import { getTeamCode } from '@/lib/teams'
@@ -124,6 +125,14 @@ export function VoteForm({ match, existingPrediction }: VoteFormProps) {
           </span>
         )}
       </div>
+
+      {/* Featured match info */}
+      {match.is_featured && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(240,170,80,0.10)', border: '1px solid rgba(240,170,80,0.25)', borderRadius: 'calc(var(--radius) - 4px)', padding: '10px 14px', fontSize: 12.5, fontWeight: 600, color: 'oklch(0.85 0.10 80)' }}>
+          <Star size={13} strokeWidth={2} style={{ flexShrink: 0 }} />
+          Featured match · Correct winner → 20 pts · Correct diff → 30 pts
+        </div>
+      )}
 
       {/* Live change indicator */}
       {(savedLabel !== null || currentLabel !== null) && (

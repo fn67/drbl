@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Star } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { LeaderboardEntry } from '@/types'
 
@@ -22,6 +23,7 @@ interface PredictionRow {
   result: string
   pts: number
   correct: boolean
+  featured: boolean
 }
 
 interface PredictionsModalProps {
@@ -40,11 +42,11 @@ export function PredictionsModal({ user, open, onClose }: PredictionsModalProps)
     setLoading(true)
     fetch(`/api/predictions?userId=${user.user_id}`)
       .then(r => r.json())
-      .then((data: { matches: { home_team: string; away_team: string; home_score: number | null; away_score: number | null; winner_override: 'home' | 'away' | null }; predicted_winner: string; goal_difference: number | null; points_earned: number }[]) => {
+      .then((data: { matches: { home_team: string; away_team: string; home_score: number | null; away_score: number | null; winner_override: 'home' | 'away' | null; is_featured?: boolean }; predicted_winner: string; goal_difference: number | null; points_earned: number }[]) => {
         const rows: PredictionRow[] = (data ?? [])
           .filter((p) => p.matches && (p.matches as { home_score: number | null }).home_score !== null)
           .map((p) => {
-            const m = p.matches as { home_team: string; away_team: string; home_score: number | null; away_score: number | null; winner_override: 'home' | 'away' | null }
+            const m = p.matches as { home_team: string; away_team: string; home_score: number | null; away_score: number | null; winner_override: 'home' | 'away' | null; is_featured?: boolean }
             const predLabel =
               p.predicted_winner === 'draw'
                 ? 'Draw'
@@ -57,6 +59,7 @@ export function PredictionsModal({ user, open, onClose }: PredictionsModalProps)
               result: `${m.home_score} – ${m.away_score}${m.winner_override ? ` (${m.winner_override === 'home' ? m.home_team : m.away_team} - pens)` : ''}`,
               pts: p.points_earned,
               correct: p.points_earned > 0,
+              featured: m.is_featured ?? false,
             }
           })
         setPredictions(rows)
@@ -105,7 +108,15 @@ export function PredictionsModal({ user, open, onClose }: PredictionsModalProps)
               ) : predictions.map((p, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 16px', borderRadius: 'calc(var(--radius) - 4px)', background: p.correct ? 'rgba(98,200,150,0.06)' : 'rgba(255,255,255,0.02)', border: p.correct ? '1px solid rgba(98,200,150,0.18)' : '1px solid var(--border)' }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--foreground)' }}>{p.match}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--foreground)' }}>{p.match}</span>
+                      {p.featured && (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(240,170,80,0.18)', color: 'oklch(0.85 0.10 80)', fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 999, letterSpacing: 0.3, flexShrink: 0 }}>
+                          <Star size={10} strokeWidth={2} />
+                          2x
+                        </span>
+                      )}
+                    </div>
                     <div style={{ display: 'flex', gap: 12, marginTop: 4, fontSize: 12, fontWeight: 600, color: 'var(--muted-foreground)', flexWrap: 'wrap' }}>
                       <span>Predicted: <span style={{ color: 'var(--foreground)' }}>{p.prediction}</span></span>
                       <span>Result: <span style={{ color: 'var(--foreground)' }}>{p.result}</span></span>

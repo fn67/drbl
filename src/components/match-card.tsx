@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { Star } from 'lucide-react'
 import { Match, Prediction } from '@/types'
 import { Flag } from '@/components/flag'
 import { getTeamCode } from '@/lib/teams'
@@ -102,10 +103,18 @@ export function MatchCard({ match, userPrediction, voteCounts }: MatchCardProps)
       }}>
         {/* Top row */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{
-            fontSize: 12, fontWeight: 600, letterSpacing: 0.6,
-            textTransform: 'uppercase', color: 'var(--muted-foreground)',
-          }}>{roundLabel}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{
+              fontSize: 12, fontWeight: 600, letterSpacing: 0.6,
+              textTransform: 'uppercase', color: 'var(--muted-foreground)',
+            }}>{roundLabel}</span>
+            {match.is_featured && (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: 'rgba(240,170,80,0.16)', color: 'oklch(0.85 0.10 80)', fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 999, letterSpacing: 0.3 }}>
+                <Star size={14} strokeWidth={2} />
+                2x pts
+              </span>
+            )}
+          </div>
           <StatusBadge status={match.status} />
         </div>
 

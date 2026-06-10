@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Star } from 'lucide-react'
 import { Match } from '@/types'
 import { computeStatus } from '@/lib/utils'
 import { Flag } from '@/components/flag'
@@ -107,7 +108,7 @@ export default function AdminResultsPage() {
               return (
                 <div key={m.id} style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
                   <div style={{ flex: 1, minWidth: 200 }}>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: 8 }}><Flag code={getTeamCode(m.home_team)} size={18} />{m.home_team} vs <Flag code={getTeamCode(m.away_team)} size={18} />{m.away_team}</div>
+                    <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: 8 }}><Flag code={getTeamCode(m.home_team)} size={18} />{m.home_team} vs <Flag code={getTeamCode(m.away_team)} size={18} />{m.away_team}{m.is_featured && (<span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, background: 'rgba(240,170,80,0.16)', color: 'oklch(0.85 0.10 80)', fontSize: 10.5, fontWeight: 700, padding: '2px 6px', borderRadius: 999 }}><Star size={10} strokeWidth={2} />2x</span>)}</div>
                     <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 3 }}>
                       {m.group_name ? `${m.group_name} · ` : ''}{m.round} · {new Date(m.kickoff_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })}
                       {isCompleted && m.home_score !== null && (

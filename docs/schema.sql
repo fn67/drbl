@@ -51,6 +51,7 @@ create table public.matches (
   away_score integer,
   manually_locked boolean default false,
   winner_override text check (winner_override in ('home', 'away')), -- penalty/shootout winner for knockout draws
+  is_featured boolean default false,
   created_at timestamptz default now()
 );
 
@@ -167,6 +168,7 @@ declare
   match_record public.matches%rowtype;
   actual_winner text;
   actual_diff integer;
+  pts_multiplier integer;
 begin
   -- Get the match
   select * into match_record
@@ -176,6 +178,9 @@ begin
   if not found then
     raise exception 'Match not found or not completed';
   end if;
+
+  -- Featured matches award double points
+  pts_multiplier := case when match_record.is_featured then 2 else 1 end;
 
   -- Determine actual winner (winner_override takes precedence for penalty shootouts)
   if match_record.winner_override is not null then
@@ -194,13 +199,13 @@ begin
 
   -- Update points for all predictions on this match
   update public.predictions
-  set points_earned = case
-    -- Correct winner + correct goal difference = 15 pts
+  set points_earned = pts_multiplier * case
+    -- Correct winner + correct goal difference = 15 pts (base)
     when predicted_winner = actual_winner
       and goal_difference = actual_diff
       and actual_winner != 'draw'
     then 15
-    -- Correct winner only = 10 pts
+    -- Correct winner only = 10 pts (base)
     when predicted_winner = actual_winner
     then 10
     -- Wrong prediction = 0 pts

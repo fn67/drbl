@@ -139,6 +139,7 @@ export interface Match {
   away_score: number | null
   manually_locked: boolean
   winner_override: 'home' | 'away' | null  // penalty/shootout winner for knockout draws
+  is_featured: boolean
   created_at: string
 }
 
@@ -230,6 +231,18 @@ Admin can manually override lock/unlock at any time.
   Actual goal diff is 0 so nobody earns the 15pt bonus.
   Correct winner prediction earns 10pts.
 
+### Featured Matches (2× points)
+
+- `is_featured boolean` column on matches table, default false
+- `calculate_points()` applies `pts_multiplier = 2` when `is_featured = true`
+- Featured correct winner: **20 points**
+- Featured correct winner + diff: **30 points**
+- Admin toggles featured status via checkbox in the add/edit match form
+- Gem icon (gold/amber: `oklch(0.85 0.10 80)`, bg `rgba(240,170,80,0.16)`) used throughout
+- Featured "2x pts" badge shown on: match cards, match detail hero, vote form,
+  pending votes, My Space active predictions, My Space history, leaderboard predictions drawer,
+  admin match management table, admin results page
+
 ---
 
 ## Voting Rules
@@ -290,6 +303,8 @@ Admin can manually override lock/unlock at any time.
 - Admin link in navbar for admin users only
 - Searchable team dropdowns using teams.ts
 - Group dropdown only shows when Round is Group Stage
+- Featured match checkbox in add/edit form — sets is_featured on the match
+- Gem badge shown in Teams column for featured matches
 - Sidebar is fixed — only content area scrolls
 
 ### 7. Admin — Results `/admin/results`
@@ -299,6 +314,7 @@ Admin can manually override lock/unlock at any time.
   inline penalty winner selector appears automatically
 - Admin selects winning team, saved as winner_override in matches table
 - Approve button disabled until winner selected in penalty scenario
+- Gem badge shown next to match name for featured matches
 
 ---
 
@@ -328,7 +344,7 @@ Mobile: logo only in pill, bottom nav bar for navigation.
 
 - `main` — clean, empty base
 - `dev` — main development branch, all completed work lives here
-- `ui-tweaks` — open branch for UI polish (branched from dev)
+- `featured-games` — featured match system (branched from dev, open)
 - `test-auth` — experimental employee validation middleware, NOT merging
 
 ---
@@ -409,3 +425,6 @@ Never use: "update", "fix stuff", "wip", "changes".
   getMatchWinner checks winner_override first, then falls back to score comparison
 - winner_override takes precedence over scores everywhere: match cards, match detail, 
   voter reveal highlight, points calculation, "You predicted" result display
+- Featured match Gem icon: always inline SVG (lucide Gem paths), never import from lucide-react
+  Paths: `<polygon points="6 3 18 3 22 9 12 22 2 9"/>`, `<path d="M11 3 8 9l4 13 4-13-3-6"/>`, `<path d="M2 9h20"/>`
+  Color: stroke `oklch(0.85 0.10 80)`, bg `rgba(240,170,80,0.16)`, text `oklch(0.85 0.10 80)`

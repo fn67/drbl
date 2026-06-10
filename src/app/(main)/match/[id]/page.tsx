@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
 import { getUser } from '@/lib/auth'
 import { computeStatus, getAvatarColor, getInitials, getMatchWinner, formatIST } from '@/lib/utils'
+import { Star } from 'lucide-react'
 import { PageTitle } from '@/components/page-title'
 
 export const metadata: Metadata = { title: 'DRBL | Match' }
@@ -137,6 +138,13 @@ export default async function MatchDetailPage({ params }: PageProps) {
             <span style={{ opacity: 0.4 }}>·</span>
             <span>{timeStr}</span>
           </div>
+
+          {match.is_featured && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: 'rgba(240,170,80,0.12)', border: '1px solid rgba(240,170,80,0.28)', borderRadius: 'calc(var(--radius) - 4px)', padding: '11px 16px', fontSize: 13, fontWeight: 700, color: 'oklch(0.88 0.12 80)' }}>
+              <Star size={15} strokeWidth={2} style={{ flexShrink: 0 }} />
+              Featured match — Double points!
+            </div>
+          )}
         </div>
 
         {match.status === 'voting_open' && (
