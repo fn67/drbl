@@ -22,9 +22,15 @@ begin
   insert into public.users (id, name, email)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data->>'full_name', new.email),
+    coalesce(
+      new.raw_user_meta_data->>'full_name',
+      new.raw_user_meta_data->>'name',
+      new.raw_user_meta_data->>'display_name',
+      split_part(new.email, '@', 1)
+    ),
     new.email
-  );
+  )
+  on conflict (id) do nothing;
   return new;
 end;
 $$ language plpgsql security definer;
@@ -40,10 +46,10 @@ create table public.matches (
   id uuid primary key default uuid_generate_v4(),
   home_team text not null,
   away_team text not null,
-  home_flag text not null default '',   -- emoji flag e.g. 🇧🇷
+  home_flag text not null default '',
   away_flag text not null default '',
   kickoff_at timestamptz not null,
-  round text not null,                  -- 'Group Stage' | 'Round of 16' | 'Quarter Final' | 'Semi Final' | 'Final'
+  round text not null,                  -- 'Group Stage' | 'Round of 32' | 'Round of 16' | 'Quarter Final' | 'Semi Final' | 'Third Place Play-off' | 'Final'
   group_name text not null default '',  -- 'Group A' etc, empty for knockouts
   status text not null default 'upcoming'
     check (status in ('upcoming', 'voting_open', 'locked', 'completed')),
@@ -149,13 +155,12 @@ create or replace view public.leaderboard as
 select
   u.id as user_id,
   u.name,
-  u.email,
   coalesce(sum(p.points_earned), 0) as total_points,
   count(case when p.points_earned > 0 then 1 end) as correct_predictions,
   count(p.id) as total_predictions
 from public.users u
 left join public.predictions p on p.user_id = u.id
-group by u.id, u.name, u.email
+group by u.id, u.name
 order by total_points desc, u.name asc;
 
 -- ─────────────────────────────────────────
