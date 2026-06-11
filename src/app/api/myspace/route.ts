@@ -1,9 +1,10 @@
 import { createClient } from '@/lib/supabase-server'
+import { NO_STORE_HEADERS } from '@/lib/http-headers'
 
 export async function GET() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401, headers: NO_STORE_HEADERS })
 
   const [
     { data: profile },
@@ -17,5 +18,5 @@ export async function GET() {
     supabase.from('leaderboard').select('total_points').eq('user_id', user.id).single(),
   ])
 
-  return Response.json({ profile, predictions: predictions ?? [], matches: matches ?? [], totalPoints: leaderboard?.total_points ?? 0 })
+  return Response.json({ profile, predictions: predictions ?? [], matches: matches ?? [], totalPoints: leaderboard?.total_points ?? 0 }, { headers: NO_STORE_HEADERS })
 }

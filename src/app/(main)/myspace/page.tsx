@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Star } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
 export const metadata: Metadata = { title: 'DRBL | My Space' }
 import { createClient } from '@/lib/supabase-server'
 import { getUser } from '@/lib/auth'

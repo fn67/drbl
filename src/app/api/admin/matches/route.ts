@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase-server'
+import { NO_STORE_HEADERS } from '@/lib/http-headers'
 
 async function requireAdmin(supabase: Awaited<ReturnType<typeof createClient>>) {
   const { data: { user } } = await supabase.auth.getUser()
@@ -9,30 +10,30 @@ async function requireAdmin(supabase: Awaited<ReturnType<typeof createClient>>) 
 
 export async function POST(request: Request) {
   const supabase = await createClient()
-  if (!await requireAdmin(supabase)) return Response.json({ error: 'Forbidden' }, { status: 403 })
+  if (!await requireAdmin(supabase)) return Response.json({ error: 'Forbidden' }, { status: 403, headers: NO_STORE_HEADERS })
 
   const body = await request.json()
   const { data, error } = await supabase.from('matches').insert(body).select().single()
-  if (error) return Response.json({ error: error.message }, { status: 400 })
-  return Response.json(data)
+  if (error) return Response.json({ error: error.message }, { status: 400, headers: NO_STORE_HEADERS })
+  return Response.json(data, { headers: NO_STORE_HEADERS })
 }
 
 export async function PATCH(request: Request) {
   const supabase = await createClient()
-  if (!await requireAdmin(supabase)) return Response.json({ error: 'Forbidden' }, { status: 403 })
+  if (!await requireAdmin(supabase)) return Response.json({ error: 'Forbidden' }, { status: 403, headers: NO_STORE_HEADERS })
 
   const { id, ...updates } = await request.json()
   const { data, error } = await supabase.from('matches').update(updates).eq('id', id).select().single()
-  if (error) return Response.json({ error: error.message }, { status: 400 })
-  return Response.json(data)
+  if (error) return Response.json({ error: error.message }, { status: 400, headers: NO_STORE_HEADERS })
+  return Response.json(data, { headers: NO_STORE_HEADERS })
 }
 
 export async function DELETE(request: Request) {
   const supabase = await createClient()
-  if (!await requireAdmin(supabase)) return Response.json({ error: 'Forbidden' }, { status: 403 })
+  if (!await requireAdmin(supabase)) return Response.json({ error: 'Forbidden' }, { status: 403, headers: NO_STORE_HEADERS })
 
   const { id } = await request.json()
   const { error } = await supabase.from('matches').delete().eq('id', id)
-  if (error) return Response.json({ error: error.message }, { status: 400 })
-  return Response.json({ ok: true })
+  if (error) return Response.json({ error: error.message }, { status: 400, headers: NO_STORE_HEADERS })
+  return Response.json({ ok: true }, { headers: NO_STORE_HEADERS })
 }

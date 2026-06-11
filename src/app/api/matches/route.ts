@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase-server'
 import { computeStatus } from '@/lib/utils'
+import { NO_STORE_HEADERS } from '@/lib/http-headers'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -17,9 +18,9 @@ export async function GET(request: Request) {
       .order('id', { ascending: false })
       .range(offset, offset + 19)
 
-    if (error) return Response.json({ error: error.message }, { status: 500 })
+    if (error) return Response.json({ error: error.message }, { status: 500, headers: NO_STORE_HEADERS })
     const enriched = (data ?? []).map(m => ({ ...m, status: computeStatus(m) }))
-    return Response.json(enriched)
+    return Response.json(enriched, { headers: NO_STORE_HEADERS })
   }
 
   const { data: matches, error } = await supabase
@@ -27,8 +28,8 @@ export async function GET(request: Request) {
     .select('*')
     .order('kickoff_at')
 
-  if (error) return Response.json({ error: error.message }, { status: 500 })
+  if (error) return Response.json({ error: error.message }, { status: 500, headers: NO_STORE_HEADERS })
 
   const enriched = (matches ?? []).map(m => ({ ...m, status: computeStatus(m) }))
-  return Response.json(enriched)
+  return Response.json(enriched, { headers: NO_STORE_HEADERS })
 }

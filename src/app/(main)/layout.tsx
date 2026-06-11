@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { Navbar } from '@/components/navbar'
 import { BottomNav } from '@/components/bottom-nav'
 import { getUser } from '@/lib/auth'

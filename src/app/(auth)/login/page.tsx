@@ -10,7 +10,7 @@ export default function LoginPage() {
     const supabase = createClient()
     await supabase.auth.signInWithOAuth({
       provider: 'azure',
-      options: { scopes: 'email', redirectTo: `${window.location.origin}/auth/callback` },
+      options: { scopes: 'email', redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'https://tribemania.litmus7.intra'}/auth/callback` },
     })
   }
 

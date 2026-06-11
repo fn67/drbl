@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase-server'
 import { computeStatus } from '@/lib/utils'
+import { NO_STORE_HEADERS } from '@/lib/http-headers'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -13,8 +14,8 @@ export async function GET(request: Request) {
       .from('predictions')
       .select('match_id, predicted_winner')
       .in('match_id', ids)
-    if (error) return Response.json({ error: error.message }, { status: 500 })
-    return Response.json(data ?? [])
+    if (error) return Response.json({ error: error.message }, { status: 500, headers: NO_STORE_HEADERS })
+    return Response.json(data ?? [], { headers: NO_STORE_HEADERS })
   }
 
   const query = supabase
@@ -26,14 +27,14 @@ export async function GET(request: Request) {
     ? await query.eq('user_id', userId)
     : await query
 
-  if (error) return Response.json({ error: error.message }, { status: 500 })
-  return Response.json(data ?? [])
+  if (error) return Response.json({ error: error.message }, { status: 500, headers: NO_STORE_HEADERS })
+  return Response.json(data ?? [], { headers: NO_STORE_HEADERS })
 }
 
 export async function POST(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401, headers: NO_STORE_HEADERS })
 
   const { matchId, predictedWinner, goalDifference } = await request.json()
 
@@ -44,7 +45,7 @@ export async function POST(request: Request) {
     .single()
 
   if (!match || computeStatus(match) !== 'voting_open') {
-    return Response.json({ error: 'Match is not open for predictions' }, { status: 422 })
+    return Response.json({ error: 'Match is not open for predictions' }, { status: 422, headers: NO_STORE_HEADERS })
   }
 
   const { data, error } = await supabase
@@ -56,6 +57,6 @@ export async function POST(request: Request) {
     .select()
     .single()
 
-  if (error) return Response.json({ error: error.message }, { status: 400 })
-  return Response.json(data)
+  if (error) return Response.json({ error: error.message }, { status: 400, headers: NO_STORE_HEADERS })
+  return Response.json(data, { headers: NO_STORE_HEADERS })
 }

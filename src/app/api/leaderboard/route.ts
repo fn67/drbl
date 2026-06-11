@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase-server'
+import { NO_STORE_HEADERS } from '@/lib/http-headers'
 
 const PAGE_SIZE = 50
 
@@ -23,6 +24,6 @@ export async function GET(request: Request) {
 
   const { data, error, count } = await query
 
-  if (error) return Response.json({ error: error.message }, { status: 500 })
-  return Response.json({ entries: data ?? [], total: count ?? 0 })
+  if (error) return Response.json({ error: error.message }, { status: 500, headers: NO_STORE_HEADERS })
+  return Response.json({ entries: data ?? [], total: count ?? 0 }, { headers: NO_STORE_HEADERS })
 }
