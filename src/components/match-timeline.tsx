@@ -6,27 +6,29 @@ import { Match, Prediction } from '@/types'
 import { computeStatus } from '@/lib/utils'
 
 function formatDateLabel(isoDate: string): string {
-  const date = new Date(isoDate + 'T00:00:00Z')
-  const now = new Date()
-  const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
-  const tomorrowUTC = new Date(todayUTC.getTime() + 86400000)
-  const matchUTC = date.getTime()
+  // isoDate is the IST date (YYYY-MM-DD) from groupByDate
+  const todayIST = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' })
+  const tomorrowIST = new Date(new Date(todayIST + 'T00:00:00Z').getTime() + 86400000)
+    .toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' })
 
-  if (matchUTC === todayUTC.getTime()) return 'TODAY'
-  if (matchUTC === tomorrowUTC.getTime()) return 'TOMORROW'
-  return date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }).toUpperCase()
+  if (isoDate === todayIST) return 'TODAY'
+  if (isoDate === tomorrowIST) return 'TOMORROW'
+
+  return new Date(isoDate + 'T12:00:00+05:30')
+    .toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' })
+    .toUpperCase()
 }
 
 function groupByDate(matches: Match[]) {
   const groups = new Map<string, Match[]>()
   for (const m of matches) {
-    const key = new Date(m.kickoff_at).toISOString().split('T')[0]
+    const key = new Date(m.kickoff_at).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' })
     if (!groups.has(key)) groups.set(key, [])
     groups.get(key)!.push(m)
   }
   return Array.from(groups.entries()).map(([key, ms]) => ({
     label: formatDateLabel(key),
-    sub: new Date(key + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'UTC' }),
+    sub: new Date(key + 'T12:00:00+05:30').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', timeZone: 'Asia/Kolkata' }),
     matches: ms,
   }))
 }
