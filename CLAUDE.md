@@ -428,3 +428,72 @@ Never use: "update", "fix stuff", "wip", "changes".
 - Featured match Gem icon: always inline SVG (lucide Gem paths), never import from lucide-react
   Paths: `<polygon points="6 3 18 3 22 9 12 22 2 9"/>`, `<path d="M11 3 8 9l4 13 4-13-3-6"/>`, `<path d="M2 9h20"/>`
   Color: stroke `oklch(0.85 0.10 80)`, bg `rgba(240,170,80,0.16)`, text `oklch(0.85 0.10 80)`
+
+---
+
+## Production Challenges & Fixes
+
+Documented post-go-live issues and their resolutions. Do not revert any of these fixes.
+
+---
+
+### 1. CDN Caching Issue (Critical)
+
+**Problem:** CloudFront was caching API responses and SSR pages with no Cache-Control headers set. Users were seeing other users' accounts (cached HTML with embedded user data) and empty `[]` data responses served from cache. Confirmed via `x-cache: Hit from cloudfront` and `age: 6381` in network logs.
+
+**Fix:**
+- Created `src/lib/http-headers.ts` — exports `NO_STORE_HEADERS` constant (`Cache-Control: private, no-store`, `CDN-Cache-Control: no-store`, `Vary: Cookie`)
+- Added `NO_STORE_HEADERS` to every `Response.json()` call across all 7 API routes
+- Added `export const dynamic = 'force-dynamic'` to all user-specific pages and layouts
+- Added global no-cache headers in `next.config.ts` for all non-static routes
+
+**Rule: Never remove `NO_STORE_HEADERS` from API routes or `force-dynamic` from pages. These are required for correctness, not just performance.**
+
+---
+
+### 2. Reverse Proxy Redirect Issue
+
+**Problem:** After Microsoft SSO login, the auth callback was redirecting to `http://0.0.0.0:3000/` instead of the production URL. Root cause: nginx (reverse proxy in front of Docker) does not forward the `Host` header, so `request.nextUrl.origin` in the Next.js callback resolved to the container's bind address.
+
+**Fix:**
+- `NEXT_PUBLIC_APP_URL` in `.env.production` updated to `public url here`
+- `src/app/auth/callback/route.ts` updated to use `process.env.NEXT_PUBLIC_APP_URL || origin` for redirect base URL
+
+**Note:** `NEXT_PUBLIC_APP_URL` must be set correctly in `.env.production` **before** `docker build` — it is baked into the image at build time, not read at runtime.
+
+---
+
+### 3. Login Redirect Issue
+
+**Problem:** `window.location.origin` in the login page `signInWithOAuth` call could return the wrong URL behind a reverse proxy, causing the `redirectTo` parameter passed to Supabase to be incorrect.
+
+**Fix:** `src/app/(auth)/login/page.tsx` updated to use `process.env.NEXT_PUBLIC_APP_URL || window.location.origin` for the `redirectTo` value.
+
+---
+
+### 4. IST Date Grouping Fix
+
+**Problem:** A match at 12:30 AM IST was being grouped under the previous day's date label (e.g., showing "TODAY" when it was actually "TOMORROW"). Root cause: date grouping used UTC date from `toISOString()` and TODAY/TOMORROW comparison used UTC midnight, not IST.
+
+**Fix:** `src/components/match-timeline.tsx` updated — all date comparisons and group keys now use `toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' })` to produce IST-based `YYYY-MM-DD` keys.
+
+---
+
+### 5. nginx Buffer Fix
+
+**Problem:** 502 Bad Gateway errors on the auth callback route. nginx error log showed `upstream sent too big header` — the OAuth response headers (session tokens, cookies) exceeded nginx's default buffer sizes.
+
+**Fix (DevOps-side, nginx config):**
+```nginx
+proxy_buffer_size          128k;
+proxy_buffers              4 256k;
+proxy_busy_buffers_size    256k;
+large_client_header_buffers 4 16k;
+```
+
+---
+
+### 6. Environment Variables
+
+- `NEXT_PUBLIC_APP_URL` — must be set in `.env.production` before `docker build` (baked into client bundle at build time). Value: `public url here`
+- `SUPABASE_SERVICE_ROLE_KEY` — passed at runtime via `-e` flag in `docker run` (not baked in, treated as secret)
