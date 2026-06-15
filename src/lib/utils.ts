@@ -15,7 +15,7 @@ export function computeStatus(match: {
   if (match.manually_locked) return 'locked'
   const now = new Date()
   const kickoff = new Date(match.kickoff_at)
-  const votingOpens = new Date(kickoff.getTime() - 48 * 60 * 60 * 1000)
+  const votingOpens = new Date(kickoff.getTime() - 72 * 60 * 60 * 1000)
   if (now >= kickoff) return 'locked'
   if (now >= votingOpens) return 'voting_open'
   return 'upcoming'

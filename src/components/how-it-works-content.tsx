@@ -38,7 +38,7 @@ const SECTIONS = [
     ),
     title: 'Voting window',
     lines: [
-      'Voting opens 48 hours before each match.',
+      'Voting opens 72 hours before each match.',
       'Locks automatically when the match kicks off.',
     ],
   },

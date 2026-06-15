@@ -164,7 +164,7 @@ export default async function MatchDetailPage({ params }: PageProps) {
 
         {match.status === 'upcoming' && (
           <div style={{ padding: '32px 24px', textAlign: 'center', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 'var(--radius)' }}>
-            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--muted-foreground)' }}>Voting opens 48 hours before kickoff</div>
+            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--muted-foreground)' }}>Voting opens 72 hours before kickoff</div>
           </div>
         )}
       </div>

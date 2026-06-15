@@ -72,7 +72,7 @@ const VoteBar = ({ homeP, drawP, awayP, homeTeam, awayTeam, isKnockout = false }
 export function MatchCard({ match, userPrediction, voteCounts }: MatchCardProps) {
   const timeStr = formatIST(match.kickoff_at)
 
-  const hoursUntilVoting = Math.max(0, Math.ceil((new Date(match.kickoff_at).getTime() - 48 * 3600000 - Date.now()) / 3600000))
+  const hoursUntilVoting = Math.max(0, Math.ceil((new Date(match.kickoff_at).getTime() - 72 * 3600000 - Date.now()) / 3600000))
 
   const roundLabel = match.group_name
     ? `${match.group_name} · ${match.round}`
